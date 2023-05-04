@@ -1,0 +1,51 @@
+
+/*
+Global reset.
+Box sizing:
+content-box:    Border and padding adds to the size of the element (browser default).
+border-box:     Border and padding doesn't add to the size of the element (but subtracts from available internal space).
+*/
+body, div, img, input, button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+
+    /* Reset focus outline (we must define our own)  */
+    /* outline: 0; */
+}
+
+/**
+Remove Firefox-only outline on anchors, buttons and input elements.
+*/
+*::-moz-focus-inner {
+    /*
+    padding: 0px;
+    border: 0px;
+    */
+}
+
+/**
+Remove white-space below images inside anchor tag (as browser tries to position img in line with text).
+*/
+img {
+    vertical-align: top;
+}
+
+/**
+Generic class for centering text.
+*/
+.center {
+    text-align: center;
+}
+
+/**
+Generic div for clearing floats.
+*/
+.clearFloats {
+    clear: both;
+    width: 0;
+    height: 0;
+}
