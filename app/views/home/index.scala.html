@@ -1,4 +1,4 @@
-@()
+@(text: String)
 
 @title = @{"The title"}
 
@@ -9,7 +9,7 @@
 
 @* Ad content to body here *@
 @body = {
-  I¨m body
+  @text
 }
 
 @_main(title)(head)(body)
