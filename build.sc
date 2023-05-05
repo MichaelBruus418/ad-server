@@ -1,3 +1,4 @@
+/*
 import mill._
 import $ivy.`com.lihaoyi::mill-contrib-playlib:`,  mill.playlib._
 
@@ -9,3 +10,4 @@ object adserver extends PlayModule with SingleModule {
 
   object test extends PlayTests
 }
+*/

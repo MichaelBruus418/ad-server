@@ -1,0 +1,28 @@
+@import views.html.helper.CSRF
+@(id: Int)(implicit request: RequestHeader)
+
+@title = @{id match {
+	case 0 => "New Publisher"
+	case _ => "Edit publisher"
+}}
+
+@head = {
+	<!-- I'm head -->
+}
+
+@body = {
+	Id recieved: @id
+
+	<h1>@title</h1>
+	<form method="post" action="@routes.ApiController.publisherAdd()">
+		@CSRF.formField
+		<label for="name">Name:</label>
+		<input type="text" id="name" name="name">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+
+
+}
+
+@_main(title)(head)(body)

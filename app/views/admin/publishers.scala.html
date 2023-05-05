@@ -1,0 +1,17 @@
+@()
+
+@title = @{
+	"The title"
+}
+
+@head = {
+	<!-- I'm head -->
+}
+
+@body = {
+	<h1>Publishers</h1>
+
+	<button style="margin-left: 50px;" onclick="location.href='@routes.AdminController.publishersEdit(0)'">New Publisher</button>
+}
+
+@_main(title)(head)(body)

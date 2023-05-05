@@ -1,49 +1,29 @@
 package controllers
 
+
 import javax.inject._
-import play.api._
-import play.api.libs.json.Json
 import play.api.mvc._
+import services.PublisherService
 
-import scala.Console.println
-
-/** This controller creates an `Action` to handle HTTP requests to the
-  * application's home page.
-  */
 @Singleton
-class ApiController @Inject() (val controllerComponents: ControllerComponents)
-    extends BaseController {
+class ApiController @Inject() (
+  val controllerComponents: ControllerComponents,
+  val publisherService: PublisherService
+)    extends BaseController {
 
-  def request(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def publisherAdd(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
 
-    // val json = request.body.asJson
-    // println("json: " + json)
+      publisherService.getAll()
 
+      val post = request.body.asFormUrlEncoded
+      post
+        .map(args => {
+          val name = args("name").head.trim
+          Ok("Name recvieved: " + name)
+        })
+        .getOrElse(Ok("OOPS... Invalid request"))
 
-    val foo =
-      """
-       {
-         "name" : "Watership Down",
-         "location" : {
-           "lat" : 51.235685,
-           "long" : -1.309197
-         },
-         "residents" : [ {
-           "name" : "Fiver",
-           "age" : 4,
-           "role" : null
-         }, {
-           "name" : "Bigwig",
-           "age" : 6,
-           "role" : "Owsla"
-         } ]
-       }
-        """
-
-    // Bla bla bla bla
-    val bar = Json.parse(foo)
-
-    Ok(bar)
   }
 
 }

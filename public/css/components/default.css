@@ -1,0 +1,70 @@
+
+/*
+--- Default stylesheet ---
+Basic styling of input/button elemenmts.
+As browsers don't necessarily define any meaningful default for inputs and button elements, we do it ourselves.
+*/
+
+/**
+Shared styling for all input/button elements.
+ */
+input, button, textarea {
+    --default-border-color: #adadad;
+    --default-font-color: 0, 0, 0;
+
+    border: 1px solid var(--default-border-color);
+    border-radius: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: rgb(var(--default-font-color));
+    padding: 5px;
+}
+
+input:hover, button:hover, textarea:hover {
+    border-color: #0078d7;
+    cursor: text;
+}
+
+input:focus, button:focus, textarea:focus {
+    outline: 2px solid #0078d7;
+    outline-offset: -1px;
+}
+
+input:disabled, button:disabled, textarea:disabled {
+    border-color: #c0c0c0;
+    color: rgba(var(--default-font-color), 0.5);
+    cursor: default;
+}
+
+input:read-only, textarea:read-only {
+    border-color: var(--default-border-color);
+    color: rgba(var(--default-font-color), 0.75);
+    cursor: default;
+}
+
+/**
+Button specific styling.
+ */
+button, input[type=button], input[type=submit] {
+    background-color: #e1e1e1;
+    user-select: none;
+    word-wrap: break-word;
+    padding: 3px 20px;
+}
+
+button:hover, input[type=button]:hover, input[type=submit]:hover {
+    background-color: #e5f1fb;
+    cursor: pointer;
+}
+
+button:active, input[type=button]:active, input[type=submit]:active {
+    background-color: #cce4f7;
+    border-color: #005499;
+    outline: 1px dotted #000000;
+    outline-offset: -3px;
+}
+
+button:disabled, input[type=button]:disabled, input[type=submit]:disabled {
+    background-color: #cdcdcd;
+}
+

@@ -1,30 +1,27 @@
 
+/* Global reset stylesheet */
+
 /*
-Global reset.
 Box sizing:
 content-box:    Border and padding adds to the size of the element (browser default).
 border-box:     Border and padding doesn't add to the size of the element (but subtracts from available internal space).
 */
-body, div, img, input, button {
+body, div, img, input, button, textarea {
     margin: 0;
     padding: 0;
     border: 0;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     box-sizing: border-box;
 
-    /* Reset focus outline (we must define our own)  */
-    /* outline: 0; */
+    /* Reset focus outline (if we define our own)  */
+    /* outline: 0;*/
 }
 
 /**
-Remove Firefox-only outline on anchors, buttons and input elements.
+Remove Firefox-only outline.
 */
 *::-moz-focus-inner {
-    /*
-    padding: 0px;
-    border: 0px;
-    */
+    /*padding: 0;*/
+    /*border: 0;*/
 }
 
 /**
@@ -49,3 +46,4 @@ Generic div for clearing floats.
     width: 0;
     height: 0;
 }
+
