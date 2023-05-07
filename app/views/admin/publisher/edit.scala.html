@@ -14,7 +14,7 @@
 	Id recieved: @id
 
 	<h1>@title</h1>
-	<form method="post" action="@routes.ApiController.publisherAdd()">
+	<form method="post" action="@controllers.api.routes.PublisherController.add()">
 		@CSRF.formField
 		<label for="name">Name:</label>
 		<input type="text" id="name" name="name">

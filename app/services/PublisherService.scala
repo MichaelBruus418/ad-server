@@ -2,7 +2,8 @@ package services
 
 import models.Publisher
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{GetResult, JdbcProfile}
+import slick.jdbc.MySQLProfile.api._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,16 +14,14 @@ class PublisherService @Inject() (
 )(implicit ec: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
-  import profile.api._
-  def test(): String = {
-    "This String is from PublisherService"
-  }
-
   def getAll(): Unit = {
-    val query = sql"select * from publisher;".as[String]
-    val queryResult: Future[Vector[String]] = db.run(query)
-    queryResult.map(println(_))
-
+    implicit val getResultPublisher: AnyRef with GetResult[Publisher] =
+      GetResult(r => Publisher(r.<<, r.<<))
+    val query = sql"select * from publisher".as[Publisher]
+    val queryResult: Future[Vector[Publisher]] = db.run(query.transactionally)
+    queryResult.onComplete(println(_))
   }
 
 }
+
+

@@ -1,6 +1,7 @@
 package models
 
-case class Publisher(
+case class Zone(
   id: Int,
+  publisher: Int,
   name: String,
- )
+)
