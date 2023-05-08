@@ -1,28 +1,32 @@
 package controllers.api
 
 import play.api.mvc._
-import services.PublisherService
+import dao.PublisherDAO
+import play.api.libs.json.Json
 
 import javax.inject._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class PublisherController @Inject() (
   val controllerComponents: ControllerComponents,
-  val publisherService: PublisherService,
-)  extends BaseController {
+  val publisherDAO: PublisherDAO,
+) extends BaseController {
 
-  def getAll: Action[AnyContent] = Action {
+  def getAll: Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-   Ok("TODO")
+      val eventualPublishers = publisherDAO.getAll()
+      eventualPublishers
+        .map(v => Ok(Json.toJson(v)).as("application/json"))
+        .recover(e => BadRequest("Ooos... Something went wrong: " + e))
   }
 
   def get(id: Int): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-    Ok("TODO")
+      Ok("TODO")
   }
 
   def add(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-
       val post = request.body.asFormUrlEncoded
       post
         .map(args => {
@@ -34,12 +38,12 @@ class PublisherController @Inject() (
 
   def update(id: Int): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-    Ok("TODO")
+      Ok("TODO")
   }
 
   def delete(id: Int): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-    Ok("TODO")
+      Ok("TODO")
   }
 
 }

@@ -1,0 +1,12 @@
+
+#publisherTableWrapper {
+    margin: 10px;
+}
+
+.publisherTable thead {
+    background-color: #68b9ff;
+}
+
+.publisherTable tr:nth-child(even) {
+    background-color: #eeeeee;
+}

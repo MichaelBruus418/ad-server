@@ -1,9 +1,10 @@
 
 /*
 --- Default stylesheet ---
-Basic styling of input/button elemenmts.
-As browsers don't necessarily define any meaningful default for inputs and button elements, we do it ourselves.
+Basic styling of selected elements.
 */
+
+/*********************************************************************************************************************/
 
 /**
 Shared styling for all input/button elements.
@@ -67,4 +68,22 @@ button:active, input[type=button]:active, input[type=submit]:active {
 button:disabled, input[type=button]:disabled, input[type=submit]:disabled {
     background-color: #cdcdcd;
 }
+
+/**********************************************************************************************************************/
+
+table {
+    background-color: transparent;
+    border-collapse: collapse;
+}
+
+table, td, td {
+    border: 1px solid #000000;
+    padding: 3px 6px;
+}
+
+thead {
+    font-weight: bold;
+}
+
+/**********************************************************************************************************************/
 

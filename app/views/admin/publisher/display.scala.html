@@ -5,7 +5,8 @@
 }
 
 @head = {
-	<!-- I'm head -->
+	<link rel="stylesheet" href="@routes.Assets.versioned("css/admin/publisher/display.css")">
+	<script defer src="@routes.Assets.versioned("js/admin/publisher/display/main.js")" type="module"></script>
 }
 
 @body = {
@@ -13,6 +14,7 @@
 
 	<button style="margin-left: 50px;" onclick="location.href='@controllers.admin.routes.PublisherController.edit(0)'">New Publisher</button>
 
+	<div id="publisherTableWrapper"></div>
 
 }
 
