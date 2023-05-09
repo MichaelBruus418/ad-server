@@ -1,15 +1,38 @@
-
+import {CookieHelper} from "../helpers/CookieHelper.js";
 
 export class PublisherService {
 
+    static #baseUrl = "/api/publisher"
+
     static async getAll() {
-        const response = await fetch("/api/publisher");
+        let url = this.#baseUrl
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            edentials: 'same-origin',
+            cache: 'no-cache',
+        });
+        if (!response.ok) throw new Error(response.status.toString());
+        return response.json();
+    }
 
-        if (!response.ok) {
-            throw new Error(response.status.toString())
-        }
-
-        return await response.json();
+    /*
+    * Returns num of rows deleted
+    * */
+    static async delete(id) {
+        if (typeof(id) !== "number") throw new TypeError("Number expected")
+        let url = this.#baseUrl + "/delete/" + id
+        const response = await fetch(url, {
+            method: 'DELETE',
+            mode: 'cors',
+            credentials: 'same-origin',
+            cache: 'no-cache',
+            headers: {
+                'X-CSRF-Token': CookieHelper.getCookie("AD-SERVER_CSRF-Token"),
+            }
+        })
+        if (!response.ok) throw new Error(response.status.toString() + " " + response.statusText.toString());
+        return response.text().then(v => parseInt(v));
     }
 
 }

@@ -1,20 +1,22 @@
 package controllers.admin
 
 import play.api.mvc._
-import dao.PublisherDAO
+import dao.PublisherDao
 import models.Publisher
 
 import javax.inject._
+import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Random, Success, Try}
 
 @Singleton
 class PublisherController @Inject() (
-  val controllerComponents: ControllerComponents,
-  val publisherDAO: PublisherDAO,
-) extends BaseController {
+                                      val controllerComponents: ControllerComponents,
+                                      val publisherDao: PublisherDao,
+)(implicit ec: ExecutionContext) extends BaseController {
 
   def display(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      Ok(views.html.admin.publisher.display())
+      Ok(views.html.admin.publisher.main())
   }
 
   def edit(id: Int): Action[AnyContent] = Action {
@@ -30,12 +32,16 @@ class PublisherController @Inject() (
       post
         .map(args => {
           val name = args("name").head.trim
-          println("Name recvieved: " + name)
           val p = Publisher(name = name)
-          publisherDAO.add(publisher = p)
+          val eventualInsertId = publisherDao.add(p)
+          eventualInsertId.onComplete {
+            case Success(v) => println("Insert id: " + v)
+            case Failure(e) => println(e)
+          }
           Redirect(routes.PublisherController.display())
         })
         .getOrElse(BadRequest("OOPS... Invalid request"))
   }
+
 
 }

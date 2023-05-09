@@ -2,6 +2,7 @@
 /*
 --- Default stylesheet ---
 Basic styling of selected elements.
+Goes well with reset.css template :-)
 */
 
 /*********************************************************************************************************************/
@@ -87,3 +88,24 @@ thead {
 
 /**********************************************************************************************************************/
 
+/**
+Styling for anchors used as action links.
+ */
+a.action {
+}
+
+/*
+active = onclick
+*/
+a.action:active {
+    color: #ff0000;
+}
+
+/**
+link = unvisted link / visited = visted link
+*/
+a.action:visited {
+    color: #0000ee;
+}
+
+/**********************************************************************************************************************/
