@@ -1,7 +1,6 @@
-import {PublisherService} from "../../services/PublisherService.js";
 import {Controller} from "./Controller.js";
 
-export class MainView {
+export class PublisherView {
 
     #elements = new Map();
 
@@ -31,9 +30,9 @@ export class MainView {
 
         // Prepare table headers
         // We get table headers from publisher properties.
-        // Properties we don't want to print.
-        // Additional headers (after property headers).
+        // Define properties we don't want to print.
         let removePublisherHeaders = []
+        // Additional headers (after property headers).
         let additionalHeaders = [""]
 
         let tableWrapper = this.#elements.get("publisherTableWrapper")

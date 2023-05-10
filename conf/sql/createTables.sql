@@ -25,19 +25,29 @@ CREATE TABLE IF NOT EXISTS zone
     FOREIGN KEY (publisher_id) REFERENCES publisher (id)
 );
 
-
-
-
-
 ########################################################################################################################
 
 # --- Insert initial data ---
 INSERT INTO Publisher
     (name)
-VALUES ('Chuck Norris'),
-       ('Jean-Claude Van Damme'),
-       ('Steven Seagal'),
-       ('Jet Li'),
-       ('Bruce Lee');
+VALUES ('Finans'),
+       ('Politiken'),
+       ('Jyllands-Posten'),
+       ('Lokalavisen'),
+       ('Magasinet');
+
+INSERT INTO Zone
+    (publisher_id, name)
+VALUES
+    (1, 'sidebar'),
+    (1, 'body'),
+    (1, 'top'),
+    (1, 'bottom'),
+    (2, 'sidebar'),
+    (2, 'body'),
+    (3, 'sidebar');
+
+
+
 
 ########################################################################################################################

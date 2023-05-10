@@ -5,6 +5,10 @@ Basic styling of selected elements.
 Goes well with reset.css template :-)
 */
 
+html, body {
+  font-size: 16px;
+}
+
 /*********************************************************************************************************************/
 
 /**
@@ -17,7 +21,7 @@ input, button, textarea {
     border: 1px solid var(--default-border-color);
     border-radius: 2px;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: rgb(var(--default-font-color));
     padding: 5px;
 }
