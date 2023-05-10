@@ -1,14 +1,7 @@
-import {MainView} from "./MainView.js";
 import {PublisherService} from "../../services/PublisherService.js";
+import {ZoneService} from "../../services/ZoneService.js";
 
 export class Controller {
-
-    static #mainView;
-
-    static main() {
-        this.#mainView = new MainView("publisherTableWrapper")
-        this.#mainView.render()
-    }
 
     static getAllPublishers() {
         return PublisherService.getAll()
@@ -28,6 +21,10 @@ export class Controller {
 
     static editPublisher(id) {
         console.log("Edit " + id)
+    }
+
+    static getAllZones() {
+        return ZoneService.getAll()
     }
 }
 

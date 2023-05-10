@@ -14,7 +14,7 @@ class PublisherController @Inject() (
                                       val publisherDao: PublisherDao,
 )(implicit ec: ExecutionContext) extends BaseController {
 
-  def display(): Action[AnyContent] = Action {
+  def main(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       Ok(views.html.admin.publisher.main())
   }
@@ -38,7 +38,7 @@ class PublisherController @Inject() (
             case Success(v) => println("Insert id: " + v)
             case Failure(e) => println(e)
           }
-          Redirect(routes.PublisherController.display())
+          Redirect(routes.PublisherController.main())
         })
         .getOrElse(BadRequest("OOPS... Invalid request"))
   }

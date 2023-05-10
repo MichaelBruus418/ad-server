@@ -1,26 +1,58 @@
 @import views.html.helper.CSRF
 @(id: Int)(implicit request: RequestHeader)
 
-@title = @{id match {
-	case 0 => "New Publisher"
-	case _ => "Edit publisher"
-}}
+@title = @{
+	id match {
+		case 0 => "New Publisher"
+		case _ => "Edit publisher"
+	}
+}
 
 @head = {
-	<!-- I'm head -->
+	<link rel="stylesheet" href="@routes.Assets.versioned("css/admin/publisher/edit.css")">
+	<script defer src="@routes.Assets.versioned("js/admin/publisher/edit/editMain.js")" type="module"></script>
 }
 
 @body = {
 	Id recieved: @id
 
 	<h1>@title</h1>
-	<form method="post" action="@controllers.admin.routes.PublisherController.add()">
-		@CSRF.formField
-		<label for="name">Name:</label>
-		<input type="text" id="name" name="name">
-		<br>
-		<input type="submit" value="Submit">
-	</form>
+	<div id="formWrapper">
+		<form method="post" action="@controllers.admin.routes.PublisherController.add()">
+			@CSRF.formField
+			<label>
+				Name:
+				<input type="text" id="name" name="name">
+			</label>
+			<br>
+			@* START: ZONES *@
+			<div id="zoneWrapper">
+				<h2>Banner Zones</h2>
+				<div id="zoneGridWrapper">
+					<div class="zoneGrid">
+						<div class="zoneRowLabel">
+							<label for="zone_1">Zone:</label>
+						</div>
+						<div class="zoneRowInput">
+							<input type="text" id="zone_1" class="zoneName" name="zone[]">
+						</div>
+						<div class="zoneRowButton">
+							<input type="button" class="zoneRemoveBtn" value="-">
+						</div>
+					</div>
+				</div>
+				<input type="button" id="zoneAddBBtn" class="zoneAddBtn" value="+">
+			</div>
+			@* END: ZONES *@
+			<div style="margin-top: 20px;">
+				<div style="margin: auto;
+					width: fit-content;">
+					<input type="submit" value="Create">
+					<input type="button" value="Cancel" onclick="location.href = '@controllers.admin.routes.PublisherController.main()'">
+				</div>
+			</div>
+		</form>
+	</div>
 
 
 }

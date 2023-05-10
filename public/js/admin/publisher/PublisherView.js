@@ -1,7 +1,6 @@
-import {PublisherService} from "../../services/PublisherService.js";
 import {Controller} from "./Controller.js";
 
-export class MainView {
+export class PublisherView {
 
     #elements = new Map();
 
