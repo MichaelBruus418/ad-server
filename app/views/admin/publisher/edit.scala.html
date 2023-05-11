@@ -1,48 +1,61 @@
-@import views.html.helper.CSRF
-@(id: Int)(implicit request: RequestHeader)
+@(publisherId: Int)
 
 @title = @{
-	id match {
+	publisherId match {
 		case 0 => "New Publisher"
-		case _ => "Edit publisher"
+		case _ => "Edit Publisher"
+	}
+}
+
+@submitBtnValue = @{
+	publisherId match {
+		case 0 => "Create"
+		case _ => "Update"
+	}
+}
+
+@submitBtnDisabled = @{
+	publisherId match {
+		case 0 => ""
+		case _ => "disabled"
 	}
 }
 
 @head = {
 	<link rel="stylesheet" href="@routes.Assets.versioned("css/admin/publisher/edit.css")">
-	<script defer src="@routes.Assets.versioned("js/admin/publisher/edit/editMain.js")" type="module"></script>
+	<script defer src="@routes.Assets.versioned("js/admin/publisher/edit/main.js")" type="module"></script>
+	<script>
+		const publisherId = @publisherId
+		const routes = new Map();
+		routes.set("publisherControllerMain", "@controllers.admin.routes.PublisherController.main()")
+	</script>
 }
 
 @body = {
-	Id recieved: @id
-
 	<h1>@title</h1>
 	<div id="formWrapper">
-		<form method="post" action="@controllers.admin.routes.PublisherController.add()">
-			@CSRF.formField
+		<form id="publisherForm">
 			<label>
 				Name:
-				<input type="text" id="name" name="name">
+				<input type="text" id="publisherNameIpt" name="name">
 			</label>
 			<br>
 			@* START: ZONES *@
 			<div id="zoneWrapper">
 				<h2>Banner Zones</h2>
 				<div id="zoneTableWrapper"></div>
-				<input type="button" id="zoneAddBBtn" value="+">
+				<input type="button" id="zoneAddBtn" value="+" disabled>
 			</div>
 			@* END: ZONES *@
 			<div style="margin-top: 20px;">
 				<div style="margin: auto;
 					width: fit-content;">
-					<input type="submit" value="Create">
+					<input type="submit" value="@submitBtnValue" @submitBtnDisabled>
 					<input type="button" value="Cancel" onclick="location.href = '@controllers.admin.routes.PublisherController.main()'">
 				</div>
 			</div>
 		</form>
 	</div>
-
-
 }
 
 @_main(title)(head)(body)

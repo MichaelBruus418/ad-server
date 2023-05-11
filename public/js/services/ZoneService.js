@@ -1,4 +1,3 @@
-import {CookieHelper} from "../helpers/CookieHelper.js";
 
 export class ZoneService {
 
@@ -12,39 +11,32 @@ export class ZoneService {
             credentials: 'same-origin',
             cache: 'no-cache'
         });
-        if (!response.ok) throw new Error(response.status.toString());
+
+        if (!response.ok) {
+            let msg = response.status + " " + response.statusText ;
+            if (response.headers.get("content-type")?.includes("text/plain")) msg += "\n" + await(response.text())
+            throw new Error(msg)
+        }
+
         return response.json();
     }
 
-    static async getByPublihserId() {
-       /* let url = this.#baseUrl
+    static async getByPublisherId(publisherId) {
+        let url = this.#baseUrl + "/publisher/" + publisherId
         const response = await fetch(url, {
             method: 'GET',
             mode: 'cors',
-            edentials: 'same-origin',
-            cache: 'no-cache',
-        });
-        if (!response.ok) throw new Error(response.status.toString());
-        return response.json();*/
-    }
-
-    /*
-    * Returns num of rows deleted
-    * */
-    static async delete(id) {
-        /*if (typeof(id) !== "number") throw new TypeError("Number expected")
-        let url = this.#baseUrl + "/delete/" + id
-        const response = await fetch(url, {
-            method: 'DELETE',
-            mode: 'cors',
             credentials: 'same-origin',
             cache: 'no-cache',
-            headers: {
-                'X-CSRF-Token': CookieHelper.getCookie("AD-SERVER_CSRF-Token"),
-            }
-        })
-        if (!response.ok) throw new Error(response.status.toString() + " " + response.statusText.toString());
-        return response.text().then(v => parseInt(v));*/
+        });
+
+        if (!response.ok) {
+            let msg = response.status + " " + response.statusText ;
+            if (response.headers.get("content-type")?.includes("text/plain")) msg += "\n" + await(response.text())
+            throw new Error(msg)
+        }
+
+        return response.json();
     }
 
 }

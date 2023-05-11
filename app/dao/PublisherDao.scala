@@ -21,6 +21,11 @@ class PublisherDao @Inject()(
     db.run(query.transactionally)
   }
 
+  def get(id: Int): Future[Vector[Publisher]] = {
+    val query = sql"select * from publisher where id = ${id};".as[Publisher]
+    db.run(query.transactionally)
+  }
+
   /*
    * Returns id of inserted row.
    *  */
@@ -28,9 +33,9 @@ class PublisherDao @Inject()(
     val query1 =
       sqlu"""insert into publisher (name) values (${publisher.name});"""
     val query2 = sql"""select last_insert_id();""".as[Int]
-    val result = db.run(query1.andThen(query2).transactionally)
-    result.map(_.head)
-  }
+    val eventualInsertId = db.run(query1.andThen(query2).transactionally)
+    eventualInsertId.map(_.head)
+    }
 
   /*
   * Returns num of rows deleted

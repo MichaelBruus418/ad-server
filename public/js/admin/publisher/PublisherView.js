@@ -2,28 +2,28 @@ import {Controller} from "./Controller.js";
 
 export class PublisherView {
 
-    #elements = new Map();
+    // Html doc is expected to have these ids/elements
+    #elements = {
+        publisherTableWrapper: null,
+    }
 
-    constructor(publisherTableWrapperId) {
-        if (typeof (publisherTableWrapperId) != "string") throw new TypeError("String expected")
-
-        // Resolve DOM id
-        let elm = document.getElementById(publisherTableWrapperId);
-        if (elm === null) throw new ReferenceError("Unable to resolve DOM id to element: " + publisherTableWrapperId)
-        this.#elements.set("publisherTableWrapper", elm);
+    constructor() {
+        this.#resolveDomIds(this.#elements)
     }
 
     render() {
         Controller.getAllPublishers()
-            .then(publishers => this.#createTable(publishers))
+            .then(publishers => {
+                try {
+                    this.#createTable(publishers)
+                } catch (e) {
+                    console.error(e)
+                }
+            })
             .catch(e => {
-                console.error(e.name + ": " + e.message)
+                console.error(e)
                 alert("Error: Unable to fetch publisher data.")
             })
-    }
-
-    error(e) {
-
     }
 
     #createTable(publishers) {
@@ -35,7 +35,7 @@ export class PublisherView {
         // Additional headers (after property headers).
         let additionalHeaders = [""]
 
-        let tableWrapper = this.#elements.get("publisherTableWrapper")
+        let tableWrapper = this.#elements.publisherTableWrapper
         this.#removeChildren(tableWrapper)
 
         // Table
@@ -51,7 +51,7 @@ export class PublisherView {
         let allHeaders = publisherHeaders.concat(additionalHeaders)
         allHeaders.forEach(header => {
             let td = this.#createElm("td", thead)
-            this.#setInnerHtml(td,this.#capFirstLetter(header))
+            this.#setInnerHtml(td, this.#capFirstLetter(header))
         })
 
         // Table Body
@@ -120,7 +120,6 @@ export class PublisherView {
 
     #deletePublisher(id) {
         Controller.deletePublisher(id, (numOfRowsDeleted) => {
-            console.log("numOfRowsDeleted: " + numOfRowsDeleted)
             if (numOfRowsDeleted !== -1) {
                 this.render()
             } else {
@@ -130,7 +129,22 @@ export class PublisherView {
     }
 
     #editPublisher(id) {
-        alert("Edit " + id)
+        Controller.goToRoute("publisherControllerEdit", id)
+    }
+
+    #resolveDomIds(elms) {
+        for (let id in elms) {
+            if (elms[id] !== null) {
+                // Recursive callback.
+                this.#resolveDomIds(elms[id]);
+            } else {
+                // Resolve id
+                elms[id] = document.getElementById(id);
+                if (elms[id] === null) {
+                    throw new ReferenceError("Unable to resolve DOM id: " + id);
+                }
+            }
+        }
     }
 
 }

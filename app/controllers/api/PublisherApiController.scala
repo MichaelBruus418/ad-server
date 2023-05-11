@@ -2,39 +2,73 @@ package controllers.api
 
 import play.api.mvc._
 import dao.PublisherDao
+import models.Publisher
 import play.api.libs.json.Json
-import scala.util.{Failure, Random, Success, Try}
 
 import javax.inject._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
-class PublisherApiController @Inject()(
-                                      val controllerComponents: ControllerComponents,
-                                      val publisherDao: PublisherDao,
-) extends BaseController {
+class PublisherApiController @Inject() (
+  val controllerComponents: ControllerComponents,
+  val publisherDao: PublisherDao,
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def getAll: Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val eventualPublishers = publisherDao.getAll()
       eventualPublishers
         .map(v => Ok(Json.toJson(v)))
-        .recover(e => InternalServerError("Ooops... Something went wrong: " + e))
+        .recover(e => InternalServerError(e.toString))
   }
 
-  def get(id: Int): Action[AnyContent] = Action {
+  def get(id: Int): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      Ok("{property: 'value'}").as("application/json")
+      val eventualPublishers = publisherDao.get(id)
+      eventualPublishers
+        .map(v => Ok(Json.toJson(v)))
+        .recover(e => InternalServerError(e.toString))
   }
 
-  def add(): Action[AnyContent] = Action {
+  def add(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      val post = request.body.asFormUrlEncoded
-      post
-        .map(args => {
+      // --- Version 01 ---------------------------------------------------
+      val postOpt             = request.body.asFormUrlEncoded
+      val evtInsertIdOpt = postOpt.map(args => {
+        val name = args("name").head.trim
+        val p    = Publisher(name = name)
+        publisherDao.add(p)
+      })
+
+      evtInsertIdOpt match {
+        case Some(f) =>
+          f.map(v => Ok(v.toString))
+            .recover(e => InternalServerError(e.toString))
+        case None    =>
+          Future.successful(
+            InternalServerError("Ooops... Something went wrong :-(")
+          )
+      }
+
+      //  --- Version 02 -------------------------------------------------
+      /*   val resultOpt = for {
+        eventualInsertId <- request.body.asFormUrlEncoded.map(args => {
           val name = args("name").head.trim
-          Ok("Name recvieved: " + name)
+          val p    = Publisher(name = name)
+          publisherDao.add(p)
         })
-        .getOrElse(Ok("OOPS... Invalid request"))
+      } yield {
+        eventualInsertId
+          .map(v => Ok(v.toString))
+          .recover(e => InternalServerError(e.toString))
+      }
+
+      resultOpt.getOrElse(
+        Future.successful(
+          InternalServerError("Ooops... Something went wrong :-(")
+        )
+      ) */
   }
 
   def update(id: Int): Action[AnyContent] = Action {
@@ -47,8 +81,7 @@ class PublisherApiController @Inject()(
       val eventualNumOfRowsDeleted = publisherDao.delete(id)
       eventualNumOfRowsDeleted
         .map(v => Ok(v.toString))
-        .recover(e => InternalServerError("Ooops... Something went wrong: " + e))
-
+        .recover(e => InternalServerError(e.toString))
   }
 
 }

@@ -6,7 +6,11 @@
 
 @head = {
 	<link rel="stylesheet" href="@routes.Assets.versioned("css/admin/publisher/main.css")">
-	<script defer src="@routes.Assets.versioned("js/admin/publisher/publisherMain.js")" type="module"></script>
+	<script defer src="@routes.Assets.versioned("js/admin/publisher/main.js")" type="module"></script>
+	<script>
+		const routes = new Map();
+		routes.set("publisherControllerEdit", "@controllers.admin.routes.PublisherController.edit(0)".slice(0, -1))
+	</script>
 }
 
 @body = {

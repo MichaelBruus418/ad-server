@@ -2,31 +2,72 @@ import {Controller} from "../Controller.js";
 
 export class EditView {
 
-    #elements = new Map()
     #zoneCounter = 0
+    // Html doc is expected to have these ids/elements
+    #elements = {
+        publisherForm: null,
+        publisherNameIpt: null,
+        zoneTableWrapper: null,
+        zoneAddBtn: null,
+    }
 
-    constructor(zoneTabledWrapperId) {
-        if (typeof (zoneTabledWrapperId) !== "string") throw new TypeError("String expected")
-
-        // Resolve DOM ids
-        let elm = document.getElementById(zoneTabledWrapperId);
-        if (elm === null) throw new ReferenceError("Unable to resolve DOM id to element: " + zoneTabledWrapperId)
-        this.#elements.set("zoneTableWrapper", elm);
+    constructor() {
+        this.#resolveDomIds(this.#elements)
     }
 
     render() {
-        Controller.getAllZones()
-            .then(dataA => this.#createZoneTable(dataA))
+        this.#elements.publisherForm.addEventListener("submit", (e) => this.#sumbitForm(e))
+
+        // PublisherId = 0: create new publisher.
+        // PublisherId > 0: edit publisher.
+        const publisherId = Controller.getPublisherId()
+        if (publisherId === 0) {
+            this.#createZoneTable([])
+        } else {
+            this.#fetchPublisherData(publisherId)
+                .then(data => {
+                    try {
+                        this.#elements.publisherNameIpt.value = data.publisher.name
+                        this.#createZoneTable(data.zones)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                })
+                .catch(e => {
+                    console.error(e)
+                    alert("Error: Unable to fetch data.")
+                })
+        }
+    }
+
+    #sumbitForm(e) {
+        e.preventDefault()
+        let data = new FormData(this.#elements.publisherForm)
+        Controller.addPublisher(data)
+            .then(_ => {
+                try {
+                    Controller.goToRoute("publisherControllerMain")
+                } catch (e) {
+                    console.error(e)
+                }
+            })
             .catch(e => {
-                console.error(e.name + ": " + e.message)
-                alert("Error: Unable to fetch zone data.")
+                console.error(e)
+                alert("Error: Unable to add publisher.")
             })
     }
 
-    #createZoneTable(dataA) {
+    async #fetchPublisherData(publisherId) {
+        const publishers = await Controller.getPublisherById(publisherId)
+        if (publishers.length !== 1) throw new Error("PublisherId doesn't exist.")
+        const zones = await Controller.getZonesByPublisherId(publisherId)
+        return {publisher: publishers[0], zones: zones}
+    }
+
+    #createZoneTable(zones) {
         this.#zoneCounter = 0
 
-        let tableWrapper = this.#elements.get("zoneTableWrapper")
+        let tableWrapper = this.#elements.zoneTableWrapper
         this.#removeChildren(tableWrapper)
 
         // Table
@@ -45,13 +86,13 @@ export class EditView {
         let tbody = this.#createElm("tbody", table)
 
         // Table rows
-        dataA.forEach(zone => {
+        zones.forEach(zone => {
             let tr = this.#createTableRow(zone)
             tbody.appendChild(tr)
         })
 
         // Add eventListener to 'Add Zone' btn.
-        let elm = document.getElementById("zoneAddBBtn")
+        let elm = document.getElementById("zoneAddBtn")
         elm.addEventListener("click", () => this.#listenerAddZone())
 
     }
@@ -75,30 +116,13 @@ export class EditView {
         input.type = "button"
         input.className = "zoneRemoveBtn"
         input.value = "-"
+        input.disabled = true
         input.addEventListener("click", ((self, counterId) => {
             // Closure is necessary.
             return () => self.#listenerRemoveZone(counterId)
         })(this, this.#zoneCounter))
 
         return tr;
-    }
-
-    #createActions(publisher, parentElm) {
-        /* let td = this.#createElm("td", parentElm)
-         let a;
-         // Edit
-         a = this.#createElm("a", td)
-         a.href = "javascript:void(0);"
-         a.className = "action edit"
-         a.innerHTML = "Edit"
-         a.addEventListener("click", () => this.#editPublisher(publisher.id))
-         td.insertAdjacentHTML("beforeend", " ")
-         // Delete
-         a = this.#createElm("a", td)
-         a.href = "javascript:void(0);"
-         a.className = "action delete"
-         a.innerHTML = "Delete"
-         a.addEventListener("click", () => this.#deletePublisher(publisher.id))*/
     }
 
     #createElm(tagName, parentElm = null) {
@@ -125,17 +149,6 @@ export class EditView {
         while (parentElm.firstChild) parentElm.removeChild(parentElm.firstChild);
     }
 
-    #deletePublisher(id) {
-        /* Controller.deletePublisher(id, (numOfRowsDeleted) => {
-             console.log("numOfRowsDeleted: " + numOfRowsDeleted)
-             if (numOfRowsDeleted !== -1) {
-                 this.render()
-             } else {
-                 alert("Error: Unable to delete publisher.")
-             }
-         })*/
-    }
-
     #listenerRemoveZone(rowId) {
         console.log("remove: " + rowId)
     }
@@ -144,5 +157,19 @@ export class EditView {
         console.log("Add zone")
     }
 
+    #resolveDomIds(elms) {
+        for (let id in elms) {
+            if (elms[id] !== null) {
+                // Recursive callback.
+                this.#resolveDomIds(elms[id]);
+            } else {
+                // Resolve id
+                elms[id] = document.getElementById(id);
+                if (elms[id] === null) {
+                    throw new ReferenceError("Unable to resolve DOM id: " + id);
+                }
+            }
+        }
+    }
 
 }

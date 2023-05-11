@@ -25,9 +25,12 @@ class ZoneApiController @Inject()(
       Ok("TODO")
   }
 
-  def getByPublisherId(id: Int): Action[AnyContent] = Action {
+  def getByPublisherId(publisherId: Int): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      Ok("TODO")
+      val eventualZones = zoneDao.getByPublisherId(publisherId)
+      eventualZones
+        .map(v => Ok(Json.toJson(v)))
+        .recover(e => InternalServerError("Ooops... Something went wrong: " + e))
   }
 
   def add(): Action[AnyContent] = Action {

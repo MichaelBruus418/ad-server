@@ -18,8 +18,14 @@
     text-align: center;
 }
 
-#zoneTableWrapper {
+#zoneTableWrapper table, #zoneTableWrapper table td {
+    border: 0;
+    padding-left: 0;
+    padding-right: 10px;
+}
 
+#zoneTableWrapper table input {
+    margin: 0;
 }
 
 input.zoneRemoveBtn {
@@ -28,13 +34,8 @@ input.zoneRemoveBtn {
     font-size: 0.85rem;
 }
 
-input.zoneAddBtn {
-    margin-left: 47px;
-    /*padding: 3px 15px;*/
-
-    /*margin-left: 0;*/
-    padding: 3px 15px;
-
+input#zoneAddBtn {
+    margin-left: 0;
 }
 
 
