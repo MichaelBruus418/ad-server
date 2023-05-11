@@ -17,6 +17,7 @@ Shared styling for all input/button elements.
 input, button, textarea {
     --default-border-color: #adadad;
     --default-font-color: 0, 0, 0;
+    --default-disabled-font-color-alpha: 0.45;
 
     border: 1px solid var(--default-border-color);
     border-radius: 2px;
@@ -38,8 +39,8 @@ input:focus, button:focus, textarea:focus {
 
 input:disabled, button:disabled, textarea:disabled {
     border-color: #c0c0c0;
-    color: rgba(var(--default-font-color), 0.5);
-    cursor: default;
+    color: rgba(var(--default-font-color), var(--default-disabled-font-color-alpha));
+    pointer-events: none;
 }
 
 input:read-only, textarea:read-only {
@@ -71,8 +72,11 @@ button:active, input[type=button]:active, input[type=submit]:active {
 }
 
 button:disabled, input[type=button]:disabled, input[type=submit]:disabled {
-    background-color: #cdcdcd;
+    border-color: #c0c0c0;
+    color: rgba(var(--default-font-color), var(--default-disabled-font-color-alpha));
+    pointer-events: none;
 }
+
 
 /**********************************************************************************************************************/
 
@@ -81,7 +85,7 @@ table {
     border-collapse: collapse;
 }
 
-table, td, td {
+table, td {
     border: 1px solid #000000;
     padding: 3px 6px;
 }

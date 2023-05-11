@@ -21,6 +21,11 @@ class ZoneDao @Inject()(
     db.run(query.transactionally)
   }
 
+  def getByPublisherId(publisherId: Int): Future[Vector[Zone]] = {
+    val query = sql"select * from zone where publisher_id = ${publisherId};".as[Zone]
+    db.run(query.transactionally)
+  }
+
   /*
    * Returns id of inserted row.
    *  */
