@@ -1,8 +1,8 @@
 package controllers.api
 
 import play.api.mvc._
-import dao.PublisherDao
 import models.Publisher
+import models.daos.PublisherDao
 import play.api.libs.json.Json
 
 import javax.inject._
@@ -25,8 +25,9 @@ class PublisherApiController @Inject() (
 
   def get(id: Int): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      val eventualPublishers = publisherDao.get(id)
-      eventualPublishers
+      val eventualPublisher = publisherDao.get(id)
+      // Option(none) gets converted to null in json.
+      eventualPublisher
         .map(v => Ok(Json.toJson(v)))
         .recover(e => InternalServerError(e.toString))
   }
@@ -35,13 +36,13 @@ class PublisherApiController @Inject() (
     implicit request: Request[AnyContent] =>
       // --- Version 01 ---------------------------------------------------
       val postOpt             = request.body.asFormUrlEncoded
-      val evtInsertIdOpt = postOpt.map(args => {
+      val eventualInsertIdOpt = postOpt.map(args => {
         val name = args("name").head.trim
         val p    = Publisher(name = name)
         publisherDao.add(p)
       })
 
-      evtInsertIdOpt match {
+      eventualInsertIdOpt match {
         case Some(f) =>
           f.map(v => Ok(v.toString))
             .recover(e => InternalServerError(e.toString))
@@ -71,7 +72,7 @@ class PublisherApiController @Inject() (
       ) */
   }
 
-  def update(id: Int): Action[AnyContent] = Action {
+  def update(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       Ok("TODO")
   }

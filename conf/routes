@@ -15,7 +15,7 @@ GET     /assets/*file               		controllers.Assets.versioned(path="/public
 
 ########################################################################################################################
 
-# --- API ---
+# --- Internal API ---
 #+ nocsrf
 GET			/api/publisher									controllers.api.PublisherApiController.getAll()
 GET			/api/publisher/:id							controllers.api.PublisherApiController.get(id: Int)
@@ -26,4 +26,6 @@ DELETE	/api/publisher/delete/:id				controllers.api.PublisherApiController.delet
 GET			/api/zone												controllers.api.ZoneApiController.getAll()
 GET			/api/zone/publisher/:id					controllers.api.ZoneApiController.getByPublisherId(id: Int)
 
+# --- External API ---
+GET			/api/banner/ping								controllers.api.BannerApiController.ping()
 

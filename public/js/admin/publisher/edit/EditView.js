@@ -58,10 +58,10 @@ export class EditView {
     }
 
     async #fetchPublisherData(publisherId) {
-        const publishers = await Controller.getPublisherById(publisherId)
-        if (publishers.length !== 1) throw new Error("PublisherId doesn't exist.")
+        const publisher = await Controller.getPublisherById(publisherId)
+        if (publisher === null) throw new Error("PublisherId doesn't exist.")
         const zones = await Controller.getZonesByPublisherId(publisherId)
-        return {publisher: publishers[0], zones: zones}
+        return {publisher: publisher, zones: zones}
     }
 
     #createZoneTable(zones) {
