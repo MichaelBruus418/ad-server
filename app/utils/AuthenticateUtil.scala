@@ -1,10 +1,7 @@
 package utils
 
-import play.api.libs.Comet.initialByteString.decodeBase64
 import play.api.mvc.Headers
-
 import java.util.Base64
-import scala.util.matching.Regex
 
 object AuthenticateUtil {
 
@@ -59,9 +56,6 @@ object AuthenticateUtil {
       .map(_.toLowerCase())
       .toIndexedSeq
       .indexOf(userName.toLowerCase())
-    println("index: " + index)
-    if (index != -1)
-      println("retrieved password: " + credentials.values.toIndexedSeq(index))
     if (
       index != -1 && password.equals(credentials.values.toIndexedSeq(index))
     ) true
