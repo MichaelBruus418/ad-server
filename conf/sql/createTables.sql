@@ -80,7 +80,10 @@ VALUES ('Cane Line'),
        ('Københavns Listefabrik'),
        ('Læger uden grænser'),
        ('Nordicals'),
-       ('Small Danish Hotels')
+       ('Small Danish Hotels'),
+       ('Mercury Motor'),
+       ('SJEC Danmark'),
+       ('Tryg Forsikring')
 ;
 
 SET @publisher = 'Jyllands-Posten';

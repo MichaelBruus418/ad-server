@@ -1,0 +1,22 @@
+
+/* Global reset stylesheet */
+
+/*
+Box sizing:
+content-box:    Border and padding adds to the size of the element (browser default).
+border-box:     Border and padding doesn't add to the size of the element (but subtracts from available internal space).
+*/
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+
+

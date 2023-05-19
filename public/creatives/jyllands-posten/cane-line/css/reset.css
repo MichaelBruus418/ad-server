@@ -1,19 +1,63 @@
 
+/* --- Global reset --- */
+
 /*
---- Default stylesheet ---
-Basic styling of selected elements.
-Goes well with reset.css template :-)
+Box sizing:
+content-box:    Border and padding adds to the size of the element (browser default).
+border-box:     Border and padding doesn't add to the size of the element (but subtracts from available internal space).
 */
 
-html, body {
-  font-size: 16px;
+* {
+    border: 0;
+    box-sizing: border-box;
 }
+
+*:not(p, h1, h2, h3, h4, h5, h6) {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+}
+
+/**
+Remove white-space below images inside anchor tag (as browser tries to position img in line with text).
+*/
+img {
+    vertical-align: top;
+}
+
+/**********************************************************************************************************************/
+
+/* --- Generic styling classes --- */
+
+/**
+Make text unselectable.
+*/
+.userSelectNone {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/**
+Generic div for clearing floats.
+*/
+.clearFloats {
+    clear: both;
+    width: 0;
+    height: 0;
+}
+
 
 /*********************************************************************************************************************/
 
-/**
-Shared styling for all input/button elements.
- */
+/* --- Defaults for input/button elements --- */
+
 input, button, textarea {
     --default-border-color: #adadad;
     --default-font-color: 0, 0, 0;
@@ -80,6 +124,8 @@ button:disabled, input[type=button]:disabled, input[type=submit]:disabled {
 
 /**********************************************************************************************************************/
 
+/* --- Defaults for table --- */
+
 table {
     background-color: transparent;
     border-collapse: collapse;
@@ -96,24 +142,3 @@ thead {
 
 /**********************************************************************************************************************/
 
-/**
-Styling for anchors used as action links.
- */
-a.action {
-}
-
-/*
-active = onclick
-*/
-a.action:active {
-    color: #ff0000;
-}
-
-/**
-link = unvisted link / visited = visted link
-*/
-a.action:visited {
-    color: #0000ee;
-}
-
-/**********************************************************************************************************************/
