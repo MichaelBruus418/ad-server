@@ -3,15 +3,20 @@
 
 <publisher\>/<advertiser\>/<zone\>/
 
-#### Banner-types
+### Creative-types
 https://adops.dk/en/products/
 
-- standard_display
+
+#### Sizes
+
+| Size    | Name             | Zone    |
+|:--------|:-----------------|:--------|
+| 160x600 | Wide skryscraper | Sidebar |
+| 300x250 | Medium rectangle | Sidebar |
+| 300x600 | Half page        | Sidebar |
+| 930x180 | Monster small    | Body    |
+| 930x600 | Monster          | Body    |
 
 
-### Banner-type folder
 
- ```
- /images/
- ```
 

@@ -25,7 +25,6 @@ libraryDependencies += "com.typesafe.slick" %% "slick-codegen" % "3.3.2" // Don'
 // libraryDependencies += "org.slf4j" % "slf4j-nop" % "2.0.5" // NO
 
 
-
 // --- Archive ---
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"
