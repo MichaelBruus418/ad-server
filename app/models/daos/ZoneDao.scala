@@ -14,7 +14,7 @@ class ZoneDao @Inject() (
     extends HasDatabaseConfigProvider[JdbcProfile] {
 
   implicit val getResultZone: AnyRef with GetResult[Zone] =
-    GetResult(r => Zone(r.<<, r.<<, r.<<))
+    GetResult(r => Zone(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
 
   def getAll(): Future[Vector[Zone]] = {
     val query = sql"select * from zone;".as[Zone]

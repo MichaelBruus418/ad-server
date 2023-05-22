@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS creative
     id           int UNSIGNED                              NOT NULL AUTO_INCREMENT,
     campaign_id  int UNSIGNED                              NOT NULL,
     filename     varchar(255)                              NOT NULL,
+    hash         varchar(255)                              NOT NULL,
     active       boolean                                   NOT NULL,
     width        smallint UNSIGNED                         NOT NULL,
     height       smallint UNSIGNED                         NOT NULL,
@@ -130,54 +131,67 @@ VALUES ('Cane Line'),
 ;
 
 INSERT INTO campaign
-(name, publisher_id, advertiser_id, active, start_datetime, end_datetime)
-VALUES ('Cane Line Campaign',
+    (publisher_id, advertiser_id, name, active, start_datetime, end_datetime)
+VALUES (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Cane Line'),
+        'Cane Line Campaign',
         false,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'),
-       ('Københavns Listefabrik Campaign',
+        '2013-06-01 00:00:00'
+        ),
+       (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Københavns Listefabrik'),
+        'Københavns Listefabrik Campaign',
         true,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'),
-       ('Læger uden grænser Campaign',
+        '2013-06-01 00:00:00'
+        ),
+       (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Læger uden grænser'),
+        'Læger uden grænser Campaign',
         true,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'),
-       ('Mercury Motor Campaign',
+        '2013-06-01 00:00:00'
+        ),
+       (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Mercury Motor'),
+        'Mercury Motor Campaign',
         true,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'),
-       ('SJEC Danmark Campaign',
+        '2013-06-01 00:00:00'
+        ),
+       (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'SJEC Danmark'),
+        'SJEC Danmark Campaign',
         true,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'),
-       ('Tryg Forsikring Campaign',
+        '2013-06-01 00:00:00'
+        ),
+       (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Tryg Forsikring'),
+        'Tryg Forsikring Campaign',
         true,
         '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00')
+        '2013-06-01 00:00:00'
+        )
 ;
 
 
 SET @publisher = 'Jyllands-Posten';
 INSERT INTO creative
-(campaign_id, filename, active, width, height, targetMetric, targetValue)
+(campaign_id, filename, hash , active, width, height, targetMetric, targetValue)
 VALUES ((SELECT id
          FROM campaign
          where name = 'Københavns Listefabrik Campaign'
            AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
         'half_page_300x600.html',
+        'fa66bd2dc50c024b60c593ec8aecf67c',
         false,
         300,
         600,
@@ -188,6 +202,7 @@ VALUES ((SELECT id
          where name = 'Læger uden grænser Campaign'
            AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
         'medium_rectangle_300x250.html',
+        'a8a811a923772a31c0433af84536d479',
         true,
         300,
         250,
@@ -198,6 +213,7 @@ VALUES ((SELECT id
          where name = 'Læger uden grænser Campaign'
            AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
         'monster_930x600.html',
+        'f54fa8ec17f218b2bda17c7580eec1c8',
         true,
         930,
         600,
@@ -208,6 +224,7 @@ VALUES ((SELECT id
          where name = 'Læger uden grænser Campaign'
            AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
         'wide_skyscraper_160x600.html',
+        '677bee18872b7c6c4f2b50b7facc7805',
         true,
         160,
         600,

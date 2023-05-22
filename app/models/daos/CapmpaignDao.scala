@@ -1,61 +1,59 @@
 package models.daos
 
-import models.Banner
+import models.Campaign
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.jdbc.{GetResult, JdbcProfile}
 import slick.jdbc.MySQLProfile.api._
+import slick.jdbc.{GetResult, JdbcProfile}
 
 import java.sql.Timestamp
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class BannerDao @Inject() (
+class CapmpaignDao @Inject()(
   protected val dbConfigProvider: DatabaseConfigProvider
 )(implicit ec: ExecutionContext)
     extends HasDatabaseConfigProvider[JdbcProfile] {
 
-  implicit val getResultBanner: AnyRef with GetResult[Banner] = {
+  implicit val getResultCampaign: AnyRef with GetResult[Campaign] = {
     // SQL Datetime is considered a Timestamp by JDBC driver.
     GetResult(r =>
-      Banner(
+      Campaign(
+        r.<<,
         r.<<,
         r.<<,
         r.<<,
         r.<<,
         r.nextTimestamp().toLocalDateTime,
         r.nextTimestamp().toLocalDateTime,
-        r.<<,
-        r.<<,
-        r.<<,
       )
     )
   }
 
-  def getAll(): Future[Vector[Banner]] = {
-    val query = sql"select * from banner;".as[Banner]
+  def getAll(): Future[Vector[Campaign]] = {
+    val query = sql"select * from campaign;".as[Campaign]
     db.run(query)
   }
 
-  def get(id: Int): Future[Option[Banner]] = {
-    val query = sql"select * from banner where id = ${id};".as[Banner]
+  def get(id: Int): Future[Option[Campaign]] = {
+    val query = sql"select * from campaign where id = ${id};".as[Campaign]
     db.run(query).map(_.headOption)
   }
 
   /*
    * Returns id of inserted row.
    *  */
-  def add(banner: Banner): Future[Int] = {
+  def add(campaign: Campaign): Future[Int] = {
     val query1           = {
       sqlu"""
-        insert into banner
-          (zone_id, advertiser_id, name, start_datetime, end_datetime, target_num_of_views)
+        insert into campaign
+           (publisher_id, advertiser_id, name, active, start_datetime, end_datetime)
         value (
-          ${banner.zoneId},
-          ${banner.advertiserId},
-          ${banner.name},
-          ${Timestamp.valueOf(banner.startDateTime)},
-          ${Timestamp.valueOf(banner.endDateTime)},
-          ${banner.targetNumOfViews}
+          ${campaign.publisherId},
+          ${campaign.advertiserId},
+          ${campaign.name},
+          ${campaign.active},
+          ${Timestamp.valueOf(campaign.startDateTime)},
+          ${Timestamp.valueOf(campaign.endDateTime)},
         );
       """
     }
@@ -68,7 +66,7 @@ class BannerDao @Inject() (
    * Returns num of rows deleted.
    *  */
   def delete(id: Int): Future[Int] = {
-    val query = sqlu"""delete from banner where id = ${id};"""
+    val query = sqlu"""delete from campaign where id = ${id};"""
     db.run(query.transactionally)
   }
 

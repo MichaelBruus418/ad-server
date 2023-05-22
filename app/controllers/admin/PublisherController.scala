@@ -1,13 +1,10 @@
 package controllers.admin
 
 import play.api.mvc._
-import models.Banner
-import models.daos.{BannerDao, PublisherDao}
+import models.daos.PublisherDao
 
-import java.time.LocalDateTime
 import javax.inject._
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Random, Success, Try}
 
 @Singleton
 class PublisherController @Inject() (

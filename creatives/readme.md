@@ -1,7 +1,7 @@
 
 # Folder structure
 
-<publisher\>/<advertiser\>/<zone\>/
+creatives/<publisher\>/<advertiser\>/banner.html
 
 ### Creative-types
 https://adops.dk/en/products/

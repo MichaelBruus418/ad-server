@@ -6,6 +6,10 @@ case class Zone(
   id: Int = 0,
   publisherId: Int,
   name: String,
+  minWidth: Int,
+  minHeight: Int,
+  maxWidth: Int,
+  maxHeight: Int,
 )
 
 object Zone {
