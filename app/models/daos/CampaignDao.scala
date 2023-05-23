@@ -48,7 +48,6 @@ class CampaignDao @Inject()(
         AND NOW() BETWEEN start_datetime AND end_datetime
       """.as[Campaign]
     db.run(query)
-
   }
 
   /*

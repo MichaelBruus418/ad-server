@@ -36,4 +36,6 @@ GET     /api/zone/publisher/:id				controllers.api.ZoneApiController.getByPublis
 
 # --- External API ---
 GET     /api/creative/ping					controllers.api.CreativeApiController.ping()
-GET     /api/creative/link                  controllers.api.CreativeApiController.getLink()
+GET     /api/creative/request                  controllers.api.CreativeApiController.request()
+GET     /api/creative/serve                 controllers.api.CreativeApiController.serve()
+GET     /api/creative/impression            controllers.api.CreativeApiController.impression()

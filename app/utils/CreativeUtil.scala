@@ -16,13 +16,13 @@ class CreativeUtil @Inject() (
   val zoneDao: ZoneDao
 ) {
 
-  def getCreative(publisherName: String, zoneName: String): Future[Creative] = {
+  def getCreative(publisherName: String, zoneName: String): Future[Option[Creative]] = {
 
-    val eventualCreative = for {
-      eventualPublisher <- publisherDao.getByName(publisherName)
-      campaigns <- campaignDao.getCampaignsInFlightByPublisherId(eventualPublisher.get.id)
-      zone <- zoneDao.getByNameAndPublisherId(zoneName, eventualPublisher.get.id)
-      creatives <- creativeDao.getPoolByCampaignsAndZone(campaigns, zone.get)
+   /*  val eventualCreative = for {
+      publisherOpt <- publisherDao.getByName(publisherName)
+      campaigns <- campaignDao.getCampaignsInFlightByPublisherId(publisherOpt.get.id)
+      zoneOpt <- zoneDao.getByNameAndPublisherId(zoneName, publisherOpt.get.id)
+      creatives <- creativeDao.getPoolByCampaignsAndZone(campaigns, zoneOpt.get)
     } yield {
       val creativesA = creatives.toArray
       val creative = creativesA(Random.nextInt(creativesA.length))
@@ -31,7 +31,22 @@ class CreativeUtil @Inject() (
       creative
     }
 
-    eventualCreative
+    eventualCreative */
+
+    val eventualCreative = for {
+      publisherOpt <- publisherDao.getByName(publisherName)
+      campaigns <- campaignDao.getCampaignsInFlightByPublisherId(publisherOpt.get.id)
+      zoneOpt <- zoneDao.getByNameAndPublisherId(zoneName, publisherOpt.get.id)
+      creatives <- creativeDao.getPoolByCampaignsAndZone(campaigns, zoneOpt.get)
+    } yield {
+      val creativesA = creatives.toArray
+      val creative = creativesA(Random.nextInt(creativesA.length))
+      println("Pool size: " + creativesA.length)
+      println(creative)
+      creative
+    }
+
+    eventualCreative.map(Option(_))
 
   }
 

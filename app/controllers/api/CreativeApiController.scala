@@ -1,7 +1,7 @@
 package controllers.api
 
 import models.daos.CreativeDao
-import play.api.libs.json.JsString
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc._
 import utils.{AuthenticateUtil, CreativeUtil}
 
@@ -27,7 +27,7 @@ class CreativeApiController @Inject() (
       }
   }
 
-  def getLink: Action[AnyContent] = Action.async {
+  def request: Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val result = authenticate(request.headers)
       if (result.header.status != 200) {
@@ -40,8 +40,12 @@ class CreativeApiController @Inject() (
             val publisherName  = json("publisher").as[JsString].value
             val zoneName = json("zone").as[JsString].value
             val creative = creativeUtil.getCreative(publisherName, zoneName)
-
-            creative.map(v => Ok(v.toString))
+            creative.map(c => {
+              Ok(s"""{
+                   |"serve": "http://localhost:9100/api/creative/serve/${c.hash}",
+                   |"impression": "http://localhost:9100/api/creative/impression/${c.hash}"
+                   |}""".stripMargin).as("application/json")
+            })
           })
           result.getOrElse(
             Future.successful(BadRequest("Ooops... Request unrecognized :-("))
@@ -51,6 +55,16 @@ class CreativeApiController @Inject() (
         }
 
       }
+  }
+
+  def serve(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok("TODO")
+  }
+
+  def impression(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok("TODO")
   }
 
   private def authenticate(headers: Headers): Result = {
