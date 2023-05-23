@@ -1,22 +1,38 @@
 package utils
 
-import models.daos.{CreativeDao, PublisherDao}
+import models.Creative
+import models.daos.{CampaignDao, CreativeDao, PublisherDao, ZoneDao}
 
 import javax.inject._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Random, Success, Try}
 
 @Singleton
 class CreativeUtil @Inject() (
+  val campaignDao: CampaignDao,
   val creativeDao: CreativeDao,
   val publisherDao: PublisherDao,
+  val zoneDao: ZoneDao
 ) {
 
-  def getLink(publisherName: String, zoneName: String): Future[String] = {
-    val tmp = creativeDao.getAll()
-    val tmp2 = publisherDao.getAll()
+  def getCreative(publisherName: String, zoneName: String): Future[Creative] = {
 
-    Future("bla bla bla")
+    val eventualCreative = for {
+      eventualPublisher <- publisherDao.getByName(publisherName)
+      campaigns <- campaignDao.getCampaignsInFlightByPublisherId(eventualPublisher.get.id)
+      zone <- zoneDao.getByNameAndPublisherId(zoneName, eventualPublisher.get.id)
+      creatives <- creativeDao.getPoolByCampaignsAndZone(campaigns, zone.get)
+    } yield {
+      val creativesA = creatives.toArray
+      val creative = creativesA(Random.nextInt(creativesA.length))
+      println("Pool size: " + creativesA.length)
+      println(creative)
+      creative
+    }
+
+    eventualCreative
+
   }
 
 }

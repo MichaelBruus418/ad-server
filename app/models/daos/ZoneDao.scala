@@ -8,10 +8,10 @@ import slick.jdbc.{GetResult, JdbcProfile}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ZoneDao @Inject() (
-  protected val dbConfigProvider: DatabaseConfigProvider
-)(implicit ec: ExecutionContext)
-    extends HasDatabaseConfigProvider[JdbcProfile] {
+class ZoneDao @Inject()(
+                         protected val dbConfigProvider: DatabaseConfigProvider
+                       )(implicit ec: ExecutionContext)
+  extends HasDatabaseConfigProvider[JdbcProfile] {
 
   implicit val getResultZone: AnyRef with GetResult[Zone] =
     GetResult(r => Zone(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
@@ -30,6 +30,13 @@ class ZoneDao @Inject() (
     val query =
       sql"select * from zone where publisher_id = ${publisherId};".as[Zone]
     db.run(query)
+  }
+
+  def getByNameAndPublisherId(zoneName: String, publisherId: Int): Future[Option[Zone]] = {
+    val query =
+      sql"""select * from zone
+        where name = ${zoneName} AND publisher_id = ${publisherId};""".as[Zone]
+    db.run(query).map(_.headOption)
   }
 
 }

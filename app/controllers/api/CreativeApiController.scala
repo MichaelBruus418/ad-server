@@ -37,9 +37,9 @@ class CreativeApiController @Inject() (
 
         try {
           val result = body.map(json => {
-            val publisher  = json("publisher").as[JsString].value
-            val zone = json("zone").as[JsString].value
-            val creative = creativeUtil.getLink(publisher, zone)
+            val publisherName  = json("publisher").as[JsString].value
+            val zoneName = json("zone").as[JsString].value
+            val creative = creativeUtil.getCreative(publisherName, zoneName)
 
             creative.map(v => Ok(v.toString))
           })

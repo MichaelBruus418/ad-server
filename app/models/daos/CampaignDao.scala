@@ -9,7 +9,7 @@ import java.sql.Timestamp
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CapmpaignDao @Inject()(
+class CampaignDao @Inject()(
   protected val dbConfigProvider: DatabaseConfigProvider
 )(implicit ec: ExecutionContext)
     extends HasDatabaseConfigProvider[JdbcProfile] {
@@ -37,6 +37,18 @@ class CapmpaignDao @Inject()(
   def get(id: Int): Future[Option[Campaign]] = {
     val query = sql"select * from campaign where id = ${id};".as[Campaign]
     db.run(query).map(_.headOption)
+  }
+
+  def getCampaignsInFlightByPublisherId(publisherId: Int): Future[Vector[Campaign]] = {
+    val query =
+      sql"""
+        select * from campaign
+        where publisher_id = ${publisherId}
+        AND active = true
+        AND NOW() BETWEEN start_datetime AND end_datetime
+      """.as[Campaign]
+    db.run(query)
+
   }
 
   /*

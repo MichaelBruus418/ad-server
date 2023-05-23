@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS zone
     maxWidth     smallint UNSIGNED NOT NULL,
     maxHeight    smallint UNSIGNED NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (publisher_id) REFERENCES publisher (id)
+    FOREIGN KEY (publisher_id) REFERENCES publisher (id),
+    UNIQUE (publisher_id, name)
 );
 
 CREATE TABLE IF NOT EXISTS advertiser
@@ -71,7 +72,8 @@ CREATE TABLE IF NOT EXISTS creative
     targetMetric ENUM ('served', 'downloaded', 'viewable') NOT NULL,
     targetValue  int UNSIGNED                              NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (campaign_id) REFERENCES campaign (id)
+    FOREIGN KEY (campaign_id) REFERENCES campaign (id),
+    UNIQUE (hash)
 );
 
 
@@ -94,28 +96,28 @@ VALUES ((SELECT id FROM publisher where name = 'Finans'),
         300, 600),
        ((SELECT id FROM publisher where name = 'Finans'),
         'top',
-        930, 930,
-        180, 180),
+        930, 180,
+        930, 180),
        ((SELECT id FROM publisher where name = 'Finans'),
         'body',
-        930, 930,
-        180, 600),
+        930, 180,
+        930, 600),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         'sidebar',
         160, 250,
         300, 600),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         'body',
-        930, 930,
-        180, 600),
+        930, 180,
+        930, 600),
        ((SELECT id FROM publisher where name = 'Lokalavisen'),
         'top',
-        930, 930,
-        180, 180),
+        930, 180,
+        930, 180),
        ((SELECT id FROM publisher where name = 'Lokalavisen'),
         'body',
-        930, 930,
-        180, 600)
+        930, 180,
+        930, 600)
 ;
 
 INSERT INTO advertiser
@@ -137,48 +139,48 @@ VALUES (
         (SELECT id FROM advertiser where name = 'Cane Line'),
         'Cane Line Campaign',
         false,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         ),
        (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Københavns Listefabrik'),
         'Københavns Listefabrik Campaign',
         true,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         ),
        (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Læger uden grænser'),
         'Læger uden grænser Campaign',
         true,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         ),
        (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Mercury Motor'),
         'Mercury Motor Campaign',
-        true,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        false,
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         ),
        (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'SJEC Danmark'),
         'SJEC Danmark Campaign',
-        true,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        false,
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         ),
        (
         (SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Tryg Forsikring'),
         'Tryg Forsikring Campaign',
-        true,
-        '2013-05-01 00:00:00',
-        '2013-06-01 00:00:00'
+        false,
+        '2023-05-01 00:00:00',
+        '2023-06-01 00:00:00'
         )
 ;
 

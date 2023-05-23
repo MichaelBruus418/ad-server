@@ -26,6 +26,11 @@ class PublisherDao @Inject() (
     db.run(query).map(_.headOption)
   }
 
+  def getByName(name: String): Future[Option[Publisher]] = {
+    val query = sql"select * from publisher where name = ${name};".as[Publisher]
+    db.run(query).map(_.headOption)
+  }
+
   /*
    * Returns id of inserted row.
    *  */

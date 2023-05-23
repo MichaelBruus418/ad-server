@@ -36,13 +36,13 @@ class PublisherApiController @Inject() (
     implicit request: Request[AnyContent] =>
       // --- Version 01 ---------------------------------------------------
       val postOpt             = request.body.asFormUrlEncoded
-      val eventualInsertIdOpt = postOpt.map(args => {
+      val optEventualInsertId = postOpt.map(args => {
         val name = args("name").head.trim
         val p    = Publisher(name = name)
         publisherDao.add(p)
       })
 
-      eventualInsertIdOpt match {
+      optEventualInsertId match {
         case Some(f) =>
           f.map(v => Ok(v.toString))
             .recover(e => InternalServerError(e.toString))

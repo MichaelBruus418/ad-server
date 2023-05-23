@@ -1,6 +1,6 @@
 package models.daos
 
-import models.Creative
+import models.{Campaign, Creative, Zone}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.MySQLProfile.api._
 import slick.jdbc.{GetResult, JdbcProfile}
@@ -25,6 +25,23 @@ class CreativeDao @Inject()(
     val query = sql"select * from creative where id = ${id};".as[Creative]
     db.run(query).map(_.headOption)
   }
+
+
+  def getPoolByCampaignsAndZone(campaigns: Vector[Campaign], zone: Zone): Future[Vector[Creative]] = {
+    val campaignIds = campaigns.map(c => c.id)
+    val query = {
+      sql"""
+        select * from creative
+        where campaign_id in(#${campaignIds.mkString(",")})
+        and active = true
+        and width between ${zone.minWidth} and ${zone.maxWidth}
+        and height between ${zone.minHeight} and ${zone.maxHeight}
+      """.as[Creative]
+    }
+    db.run(query)
+  }
+
+
 
 
 
