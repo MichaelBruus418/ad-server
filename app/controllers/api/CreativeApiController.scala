@@ -5,6 +5,8 @@ import play.api.libs.json.{JsString, Json}
 import play.api.mvc._
 import utils.{AuthenticateUtil, CreativeUtil}
 
+import java.io.File
+import java.nio.file.NoSuchFileException
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,9 +48,9 @@ class CreativeApiController @Inject() (
             } yield {
               creative.map(c => {
                 Ok(s"""{
-                     |"serve": "http://localhost:9100/api/creative/serve/${c.hash}",
-                     |"impression": "http://localhost:9100/api/creative/impression/${c.hash}"
-                     |}""".stripMargin).as("application/json")
+                  |"serve": "http://localhost:9100/api/creative/serve/${c.hash}/index.html",
+                  |"viewableImpression": "http://localhost:9100/api/creative/impression/${c.hash}"
+                  |}""".stripMargin).as("application/json")
               })
             }
 
@@ -68,9 +70,40 @@ class CreativeApiController @Inject() (
       }
   }
 
-  def serve(): Action[AnyContent] = Action {
+  def serve(hash: String, file: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      Ok("TODO")
+      val basePath = "creatives/"
+
+      try {
+        val eventualResultOpt = for {
+          tupleOpt <- creativeUtil.getIdAndFilepathByHash(hash)
+        } yield {
+          tupleOpt.map(t => {
+            val (id, dir, filename) = t
+            try {
+              if (file.toLowerCase().endsWith("index.html")) {
+                // Serve html file for creative
+                // TODO: Inc creative counter for downloaded (use id in tuple)
+                Ok.sendFile(new File(basePath + dir + "/" + filename))
+              } else {
+                // Serve assets for creative
+                Ok.sendFile(new File(basePath + dir + "/" + file))
+              }
+            } catch {
+              case e: NoSuchFileException => Status(404)("404: Not found.")
+              case e: Throwable => Status(500)("500: Unknown Server Error")
+            }
+          })
+        }
+
+        eventualResultOpt.map(v =>
+          v.getOrElse(BadRequest("Request unrecognized."))
+        )
+
+      } catch {
+        case e: Throwable =>
+          Future.successful(InternalServerError(e.toString))
+      }
   }
 
   def impression(): Action[AnyContent] = Action {

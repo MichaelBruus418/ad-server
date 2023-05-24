@@ -41,6 +41,32 @@ class CreativeDao @Inject() (
     db.run(query).map(_.headOption)
   }
 
+  def getSelectedValuesByHash(
+    hash: String
+  ): Future[Option[Map[String, Any]]] = {
+
+    val query = {
+      sql"""
+        select cr.id, cr.filename, a.name as 'advertiser_name', p.name as 'publisher_name' from creative cr
+        inner join campaign ca
+        on ca.id = cr.campaign_id
+        inner join advertiser a
+        on a.id = ca.advertiser_id
+        inner join publisher p
+        on p.id = ca.publisher_id
+        where cr.hash = '#${hash}'
+      """.as[(Int, String, String, String)]
+    }
+
+    for {
+      vector <- db.run(query)
+    } yield {
+      vector.headOption.map(t =>
+        Map("id" -> t._1, "filename" -> t._2, "advertiser_name" -> t._3, "publisher_name" -> t._4)
+      )
+    }
+  }
+
   def getPoolByCampaignsAndZone(
     campaigns: Vector[Campaign],
     zone: Zone,
