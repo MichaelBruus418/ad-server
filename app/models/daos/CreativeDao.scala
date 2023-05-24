@@ -8,13 +8,28 @@ import slick.jdbc.{GetResult, JdbcProfile}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreativeDao @Inject()(
+class CreativeDao @Inject() (
   protected val dbConfigProvider: DatabaseConfigProvider
 )(implicit ec: ExecutionContext)
     extends HasDatabaseConfigProvider[JdbcProfile] {
 
   implicit val getResultCreative: AnyRef with GetResult[Creative] =
-    GetResult(r => Creative(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
+    GetResult(r =>
+      Creative(
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+        r.<<,
+      )
+    )
 
   def getAll(): Future[Vector[Creative]] = {
     val query = sql"select * from creative;".as[Creative]
@@ -26,10 +41,12 @@ class CreativeDao @Inject()(
     db.run(query).map(_.headOption)
   }
 
-
-  def getPoolByCampaignsAndZone(campaigns: Vector[Campaign], zone: Zone): Future[Vector[Creative]] = {
+  def getPoolByCampaignsAndZone(
+    campaigns: Vector[Campaign],
+    zone: Zone,
+  ): Future[Vector[Creative]] = {
     val campaignIds = campaigns.map(c => c.id)
-    val query = {
+    val query       = {
       sql"""
         select * from creative
         where campaign_id in(#${campaignIds.mkString(",")})
@@ -40,9 +57,5 @@ class CreativeDao @Inject()(
     }
     db.run(query)
   }
-
-
-
-
 
 }

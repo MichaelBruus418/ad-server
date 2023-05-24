@@ -11,7 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class CreativeApiController @Inject() (
   val controllerComponents: ControllerComponents,
   val creativeUtil: CreativeUtil,
-)(implicit ec: ExecutionContext) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   /*
    * Simple connection test.
@@ -37,21 +38,31 @@ class CreativeApiController @Inject() (
 
         try {
           val result = body.map(json => {
-            val publisherName  = json("publisher").as[JsString].value
-            val zoneName = json("zone").as[JsString].value
-            val creative = creativeUtil.getCreative(publisherName, zoneName)
-            creative.map(c => {
-              Ok(s"""{
-                   |"serve": "http://localhost:9100/api/creative/serve/${c.hash}",
-                   |"impression": "http://localhost:9100/api/creative/impression/${c.hash}"
-                   |}""".stripMargin).as("application/json")
-            })
+            val publisherName = json("publisher").as[JsString].value
+            val zoneName      = json("zone").as[JsString].value
+
+            val eventualResultOpt = for {
+              creative <- creativeUtil.getCreative(publisherName, zoneName)
+            } yield {
+              creative.map(c => {
+                Ok(s"""{
+                     |"serve": "http://localhost:9100/api/creative/serve/${c.hash}",
+                     |"impression": "http://localhost:9100/api/creative/impression/${c.hash}"
+                     |}""".stripMargin).as("application/json")
+              })
+            }
+
+            eventualResultOpt.map(v =>
+              v.getOrElse(BadRequest("I don't care"))
+            )
           })
+
           result.getOrElse(
             Future.successful(BadRequest("Ooops... Request unrecognized :-("))
           )
         } catch {
-          case e: Throwable => Future.successful(InternalServerError(e.toString))
+          case e: Throwable =>
+            Future.successful(InternalServerError(e.toString))
         }
 
       }
