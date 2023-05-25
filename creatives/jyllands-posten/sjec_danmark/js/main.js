@@ -11,6 +11,6 @@ window.addEventListener("DOMContentLoaded", () => {
     ];
 
     let randIdx = Math.floor(Math.random() * images.length);
-    elm.src = "./images/" + images[randIdx];
+    elm.src = "images/" + images[randIdx];
 });
 

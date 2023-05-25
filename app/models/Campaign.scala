@@ -9,7 +9,7 @@ case class Campaign(
   publisherId: Int,
   advertiserId: Int,
   name: String,
-  active: Boolean,
+  disabled: Boolean,
   startDateTime: LocalDateTime,
   endDateTime: LocalDateTime,
 ) {

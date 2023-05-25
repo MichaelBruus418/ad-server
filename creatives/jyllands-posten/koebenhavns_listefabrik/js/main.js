@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (currImage === workingList[randIdx]) randIdx = (randIdx + 1) % workingList.length
         currImage = workingList[randIdx]
         workingList.splice(randIdx, 1)
-        elm.src = "./images/" + currImage;
+        elm.src = "images/" + currImage;
     }
 
 });

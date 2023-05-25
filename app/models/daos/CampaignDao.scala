@@ -44,7 +44,7 @@ class CampaignDao @Inject()(
       sql"""
         select * from campaign
         where publisher_id = ${publisherId}
-        AND active = true
+        AND disabled = false
         AND NOW() BETWEEN start_datetime AND end_datetime
       """.as[Campaign]
     db.run(query)
@@ -57,12 +57,12 @@ class CampaignDao @Inject()(
     val query1           = {
       sqlu"""
         insert into campaign
-           (publisher_id, advertiser_id, name, active, start_datetime, end_datetime)
+           (publisher_id, advertiser_id, name, disabled, start_datetime, end_datetime)
         value (
           ${campaign.publisherId},
           ${campaign.advertiserId},
           ${campaign.name},
-          ${campaign.active},
+          ${campaign.disabled},
           ${Timestamp.valueOf(campaign.startDateTime)},
           ${Timestamp.valueOf(campaign.endDateTime)},
         );

@@ -7,16 +7,16 @@ import java.time.LocalDateTime
 case class Creative(
   id: Int = 0,
   campaignId: Int,
-  filname: String,
+  filepath: String,
   hash: String,
-  active: Boolean,
+  disabled: Boolean,
   width: Int,
   height: Int,
   served: Int,
   downloaded: Int,
   viewable: Int,
-  targetMetric: String,
-  targetValue: Int,
+  impressionMetric: String,
+  impressionTarget: Int,
 )
 
 object Creative {

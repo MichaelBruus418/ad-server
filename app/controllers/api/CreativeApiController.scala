@@ -37,7 +37,6 @@ class CreativeApiController @Inject() (
         Future.successful(result)
       } else {
         val body = request.body.asJson
-
         try {
           val result = body.map(json => {
             val publisherName = json("publisher").as[JsString].value
@@ -49,14 +48,24 @@ class CreativeApiController @Inject() (
               creative.map(c => {
                 Ok(s"""{
                   |"serve": "http://localhost:9100/api/creative/serve/${c.hash}/index.html",
-                  |"viewableImpression": "http://localhost:9100/api/creative/impression/${c.hash}"
-                  |}""".stripMargin).as("application/json")
+                  |"viewableImpression": "http://localhost:9100/api/creative/impression/${c.hash}",
+                  |"width": ${c.width},
+                  |"height": ${c.height},
+                  |}""".stripMargin)
+                  .as("application/json")
+                  .withHeaders(
+                    "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
+                    "Pragma"  -> "no-cache",
+                    "Expires" -> "0",
+                  )
               })
             }
 
-            eventualResultOpt.map(v =>
-              v.getOrElse(BadRequest("I don't care"))
-            )
+            eventualResultOpt
+              .map(v =>
+                v.getOrElse(BadRequest("Ooops... Request unrecognized :-("))
+              )
+              .recover(e => InternalServerError(e.toString))
           })
 
           result.getOrElse(
@@ -66,7 +75,6 @@ class CreativeApiController @Inject() (
           case e: Throwable =>
             Future.successful(InternalServerError(e.toString))
         }
-
       }
   }
 
@@ -79,26 +87,33 @@ class CreativeApiController @Inject() (
           tupleOpt <- creativeUtil.getIdAndFilepathByHash(hash)
         } yield {
           tupleOpt.map(t => {
-            val (id, dir, filename) = t
+            // dir = path from basePath to advertiser dir
+            // filepath = path to creative asset relative to advertiser dir
+            val (id, dir, filepath) = t
             try {
               if (file.toLowerCase().endsWith("index.html")) {
-                // Serve html file for creative
-                // TODO: Inc creative counter for downloaded (use id in tuple)
-                Ok.sendFile(new File(basePath + dir + "/" + filename))
+                // Serve html file
+                // TODO: Inc counter for served impression (use id in tuple)
+                Ok.sendFile(new File(basePath + dir + "/" + filepath))
+                  .withHeaders(
+                    "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
+                    "Pragma"  -> "no-cache",
+                    "Expires" -> "0",
+                  )
               } else {
-                // Serve assets for creative
+                // Serve assets (css, js, images etc.)
                 Ok.sendFile(new File(basePath + dir + "/" + file))
               }
             } catch {
               case e: NoSuchFileException => Status(404)("404: Not found.")
-              case e: Throwable => Status(500)("500: Unknown Server Error")
+              case e: Throwable => Status(500)("500: Unknown Server Error.")
             }
           })
         }
 
-        eventualResultOpt.map(v =>
-          v.getOrElse(BadRequest("Request unrecognized."))
-        )
+        eventualResultOpt
+          .map(v => v.getOrElse(BadRequest("Request unrecognized.")))
+          .recover(e => InternalServerError(e.toString))
 
       } catch {
         case e: Throwable =>
