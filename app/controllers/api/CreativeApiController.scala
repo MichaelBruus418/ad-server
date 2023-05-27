@@ -72,13 +72,11 @@ class CreativeApiController @Inject() (
                     "zone"                 -> zoneName,
                     "width"                -> c.width,
                     "height"               -> c.height,
-                    "html"                 -> creativeUtil.insertBasePathFromUrl(html, routes.CreativeApiController
-                      .serve(c.hash, "index.html")
-                      .absoluteURL()),
-                    "basepath"             -> creativeUtil.getBasePathFromUrl(
+                    "html" -> creativeUtil.insertBasePathFromUrl(
+                      html,
                       routes.CreativeApiController
                         .serve(c.hash, "index.html")
-                        .absoluteURL()
+                        .absoluteURL(),
                     ),
                   )
                 )

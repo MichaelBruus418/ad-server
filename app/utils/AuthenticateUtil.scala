@@ -45,9 +45,9 @@ object AuthenticateUtil {
     userName: String,
     password: String,
   ): Boolean = {
-
     val passwordOpt = GenericConfig.getPasswordByUserName(userName)
     passwordOpt.fold(false)(_.equals(password))
-
   }
+
 }
+

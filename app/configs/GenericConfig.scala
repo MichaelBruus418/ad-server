@@ -3,6 +3,22 @@ package configs
 object GenericConfig {
 
   /*
+  * @returns BasePath relative to project dir.
+  *  */
+  def getBasePath(key: String): Option[String] = {
+    val paths = Map(
+      "creatives" -> "creatives/",
+    )
+
+    val index = searchIndexCaseInsensitive(paths, key)
+    if (index != -1) {
+      Some(paths.values.toIndexedSeq(index))
+    } else {
+      None
+    }
+  }
+
+  /*
   * Hard-coded credentials for the time being.
   * ...and no, passwords shouldn't be stored in plain-text,
   * but this is only a proof-of-concept Ad-Server, so chill!

@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Campaign, Creative, Zone}
+import models.Creative
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.MySQLProfile.api._
 import slick.jdbc.{GetResult, JdbcProfile}
