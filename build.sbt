@@ -12,6 +12,9 @@ libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
 
 
+libraryDependencies += "com.typesafe.play" %% "routes-compiler" % "2.8.18"
+
+
 // --- Database ---
 libraryDependencies += jdbc
 libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.32"

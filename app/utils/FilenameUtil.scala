@@ -13,6 +13,8 @@ object FilenameUtil {
     var dst = src.replaceAll(regex, "_")
     if (rewriteDK) {
       dst = dst.replaceAll("æ", "ae")
+      dst = dst.replaceAll("ø", "oe")
+      dst = dst.replaceAll("å", "aa")
       dst = dst.replaceAll("Æ", "AE")
       dst = dst.replaceAll("Ø", "OE")
       dst = dst.replaceAll("Å", "AA")

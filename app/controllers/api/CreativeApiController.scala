@@ -1,7 +1,7 @@
 package controllers.api
 
-import models.daos.CreativeDao
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.libs.json._
 import play.api.mvc._
 import utils.{AuthenticateUtil, CreativeUtil}
 
@@ -22,12 +22,20 @@ class CreativeApiController @Inject() (
    *  */
   def ping: Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
+      Thread.sleep(3000)
       val result = authenticate(request.headers)
       if (result.header.status != 200) {
         result
       } else {
-        Ok("Ping successful.")
+        val body = request.body.asJson
+        println(body)
+        body match {
+          case Some(v) =>
+            Ok("Ping successful.\nRecieved body:\n" + v.toString)
+          case None    => Ok("Ping successful (no body recieved).")
+        }
       }
+
   }
 
   def request: Action[AnyContent] = Action.async {
@@ -39,20 +47,41 @@ class CreativeApiController @Inject() (
         val body = request.body.asJson
         try {
           val result = body.map(json => {
-            val publisherName = json("publisher").as[JsString].value
-            val zoneName      = json("zone").as[JsString].value
+            val publisherName =
+              json.\("publisher").asOpt[JsString].fold("")(_.value)
+            val zoneName    = json.\("zone").asOpt[JsString].fold("")(_.value)
+            val includeHtml =
+              json.\("includeHtml").asOpt[JsBoolean].fold(false)(_.value)
 
             val eventualResultOpt = for {
-              creative <- creativeUtil.getCreative(publisherName, zoneName)
+              (creative, html) <- creativeUtil
+                .getCreative(publisherName, zoneName, includeHtml)
             } yield {
               creative.map(c => {
-                Ok(s"""{
-                  |"serve": "http://localhost:9100/api/creative/serve/${c.hash}/index.html",
-                  |"viewableImpression": "http://localhost:9100/api/creative/impression/${c.hash}",
-                  |"width": ${c.width},
-                  |"height": ${c.height},
-                  |}""".stripMargin)
-                  .as("application/json")
+                Ok(
+                  Json.obj(
+                    "serve"                -> routes.CreativeApiController
+                      .serve(c.hash, "index.html")
+                      .absoluteURL(),
+                    "downloadedImpression" -> routes.CreativeApiController
+                      .downloadedImpression(c.hash)
+                      .absoluteURL(),
+                    "viewableImpression"   -> routes.CreativeApiController
+                      .viewableImpression(c.hash)
+                      .absoluteURL(),
+                    "zone"                 -> zoneName,
+                    "width"                -> c.width,
+                    "height"               -> c.height,
+                    "html"                 -> creativeUtil.insertBasePathFromUrl(html, routes.CreativeApiController
+                      .serve(c.hash, "index.html")
+                      .absoluteURL()),
+                    "basepath"             -> creativeUtil.getBasePathFromUrl(
+                      routes.CreativeApiController
+                        .serve(c.hash, "index.html")
+                        .absoluteURL()
+                    ),
+                  )
+                )
                   .withHeaders(
                     "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
                     "Pragma"  -> "no-cache",
@@ -72,7 +101,11 @@ class CreativeApiController @Inject() (
             Future.successful(BadRequest("Ooops... Request unrecognized :-("))
           )
         } catch {
+          case e: NoSuchElementException =>
+            println(e.toString)
+            Future.successful(BadRequest("Unknown key in json request."))
           case e: Throwable =>
+            println(e.toString)
             Future.successful(InternalServerError(e.toString))
         }
       }
@@ -94,6 +127,7 @@ class CreativeApiController @Inject() (
               if (file.toLowerCase().endsWith("index.html")) {
                 // Serve html file
                 // TODO: Inc counter for served impression (use id in tuple)
+                // Thread.sleep(3000)
                 Ok.sendFile(new File(basePath + dir + "/" + filepath))
                   .withHeaders(
                     "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
@@ -121,7 +155,12 @@ class CreativeApiController @Inject() (
       }
   }
 
-  def impression(): Action[AnyContent] = Action {
+  def downloadedImpression(hash: String): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok("TODO")
+  }
+
+  def viewableImpression(hash: String): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       Ok("TODO")
   }

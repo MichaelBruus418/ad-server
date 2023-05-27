@@ -1,6 +1,8 @@
 package utils
 
+import configs.GenericConfig
 import play.api.mvc.Headers
+
 import java.util.Base64
 
 object AuthenticateUtil {
@@ -43,25 +45,9 @@ object AuthenticateUtil {
     userName: String,
     password: String,
   ): Boolean = {
-    // Hard-coded credentials for the time being.
-    // ..and no, passwords shouldn't be stored in plain-text,
-    // but this is only a proof-of-concept Ad-Server, so chill!
-    val credentials: Map[String, String] = Map(
-      "Jyllands-Posten" -> "1234",
-      "Finans"          -> "5678",
-    )
 
-    // Hack to ignore case in map keys
-    val index = credentials.keys
-      .map(_.toLowerCase())
-      .toIndexedSeq
-      .indexOf(userName.toLowerCase())
-    if (
-      index != -1 && password.equals(credentials.values.toIndexedSeq(index))
-    ) true
-    else false
+    val passwordOpt = GenericConfig.getPasswordByUserName(userName)
+    passwordOpt.fold(false)(_.equals(password))
 
-    // Why doesnt this return an Option[String)?
-    // val password = credentials.getOrElse(userName, credentials.get(userName.toLowerCase()))
   }
 }

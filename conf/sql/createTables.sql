@@ -168,13 +168,13 @@ VALUES ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'SJEC Danmark'),
         'SJEC Danmark Campaign',
-        true,
+        false,
         '2023-05-01 00:00:00',
         '2023-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Tryg Forsikring'),
         'Tryg Forsikring Campaign',
-        true,
+        false,
         '2023-05-01 00:00:00',
         '2023-06-01 00:00:00')
 ;
@@ -224,7 +224,7 @@ VALUES ((SELECT id
            AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
         'half_page_300x600.html',
         MD5(concat(filepath, campaign_id, rand())),
-        true,
+        false,
         300,
         600,
         'served',
@@ -271,6 +271,28 @@ VALUES ((SELECT id
         false,
         930,
         600,
+        'served',
+        100),
+       ((SELECT id
+         FROM campaign
+         where name = 'SJEC Danmark Campaign'
+           AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
+        'monster_930x600.html',
+        MD5(concat(filepath, campaign_id, rand())),
+        false,
+        930,
+        600,
+        'served',
+        100),
+       ((SELECT id
+         FROM campaign
+         where name = 'Tryg Forsikring Campaign'
+           AND publisher_id = (SELECT id FROM publisher where name = @publisher)),
+        'monster_small_930x180.html',
+        MD5(concat(filepath, campaign_id, rand())),
+        false,
+        930,
+        180,
         'served',
         100)
 ;

@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let currImage = null;
 
     randomImageCycle()
-    setInterval(randomImageCycle, 5000)
+    setInterval(randomImageCycle, 2000)
 
     function randomImageCycle() {
         if (workingList.length === 0) workingList = masterList.slice();
