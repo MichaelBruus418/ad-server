@@ -1,5 +1,6 @@
 package controllers.api
 
+import configs.GenericConfig
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json._
 import play.api.mvc._
@@ -28,7 +29,6 @@ class CreativeApiController @Inject() (
         result
       } else {
         val body = request.body.asJson
-        println(body)
         body match {
           case Some(v) =>
             Ok("Ping successful.\nRecieved body:\n" + v.toString)
@@ -72,13 +72,11 @@ class CreativeApiController @Inject() (
                     "zone"                 -> zoneName,
                     "width"                -> c.width,
                     "height"               -> c.height,
-                    "html"                 -> creativeUtil.insertBasePathFromUrl(html, routes.CreativeApiController
-                      .serve(c.hash, "index.html")
-                      .absoluteURL()),
-                    "basepath"             -> creativeUtil.getBasePathFromUrl(
+                    "html" -> creativeUtil.insertBasePathFromUrl(
+                      html,
                       routes.CreativeApiController
                         .serve(c.hash, "index.html")
-                        .absoluteURL()
+                        .absoluteURL(),
                     ),
                   )
                 )
@@ -113,7 +111,7 @@ class CreativeApiController @Inject() (
 
   def serve(hash: String, file: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      val basePath = "creatives/"
+      val basePath = GenericConfig.getBasePath("creatives").getOrElse("")
 
       try {
         val eventualResultOpt = for {

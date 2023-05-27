@@ -8,7 +8,5 @@ case class Publisher(
 )
 
 object Publisher {
-  implicit val format: Format[Publisher] = Json.format[Publisher] // Combined read/write
-  // implicit val publisherReads: Reads[Publisher] = Json.reads[Publisher] // JsValue to case class obj
-  // implicit val publisherWrites: Writes[Publisher] = Json.writes[Publisher] // Case class obj to JsValue
+  implicit val format: Format[Publisher] = Json.format[Publisher]
 }

@@ -1,5 +1,6 @@
 package utils
 
+import configs.GenericConfig
 import models.Creative
 import models.daos.{CreativeDao, PublisherDao, ZoneDao}
 
@@ -16,7 +17,7 @@ class CreativeUtil @Inject() (
   val publisherDao: PublisherDao,
   val zoneDao: ZoneDao,
 ) {
-  val basePath = "creatives/"
+  val basePath: String = GenericConfig.getBasePath("creatives").getOrElse("")
 
   def getCreative(
     publisherName: String,
@@ -45,11 +46,10 @@ class CreativeUtil @Inject() (
                 val htmlString = src.mkString
                 src.close()
                 htmlString
-              }
-              catch {
+              } catch {
                 case e: Throwable =>
                   println(e.toString)
-                  ""
+                  "" // Empty string (not a typo).
               }
             })
           (Some(creative), html)
@@ -86,26 +86,20 @@ class CreativeUtil @Inject() (
     }
   }
 
-  def getBasePathFromUrl(url: String): String = {
-    val regex = "\\w+\\.html$".r
-    regex.replaceAllIn(url, "")
+  def insertBasePathFromUrl(
+    html: Option[String],
+    url: String,
+  ): Option[String] = {
+    html.map(value => {
+      val basePath = s"\n\t<base href=\"${getBasePathFromUrl(url)}\">"
+      val regex    = """^(?i)((.|\n|\r)*?<head>)((.|\n|\r)*?</Head>)""".r
+      regex.replaceAllIn(value, m => m.group(1) + basePath + m.group(3))
+    })
   }
 
-  def insertBasePathFromUrl(html: Option[String], url: String): Option[String] = {
-
-    var src = html.getOrElse("")
-    // val regex = """(<head>)(\n|\r|.)+(</head>)""".r
-    val regex = new Regex("(<head>)(.|\\n|\\r|\\t|\\\\|\\b|\\d)+?(</head>)")
-    // val regex = """(&lt;head&gt;)(.*?)(&lt;/head&gt;)""".r
-
-    // using a "replacer" function that replaces the number found with double its value
-    src = regex.replaceAllIn(src, m => m.group(1) + m.group(2) + "blah" + m.group(3))
-    // "foo246bar"
-
-    println("Regexed src: ")
-    println(src)
-
-    html
+  private def getBasePathFromUrl(url: String): String = {
+    val regex = "\\w+\\.html$".r
+    regex.replaceAllIn(url, "")
   }
 
 }
