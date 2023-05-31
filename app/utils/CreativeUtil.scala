@@ -92,7 +92,7 @@ class CreativeUtil @Inject() (
   ): Option[String] = {
     html.map(value => {
       val basePath = s"\n\t<base href=\"${getBasePathFromUrl(url)}\">"
-      val regex    = """^(?i)((.|\n|\r)*?<head>)((.|\n|\r)*?</Head>)""".r
+      val regex    = """^(?i)((.|\n|\r)*?<head>)((.|\n|\r)*?</head>)""".r
       regex.replaceAllIn(value, m => m.group(1) + basePath + m.group(3))
     })
   }
