@@ -1,6 +1,9 @@
 package controllers.api
 
 import configs.GenericConfig
+import enums.Metric
+import models.Creative
+import models.daos.CreativeDao
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json._
 import play.api.mvc._
@@ -10,10 +13,12 @@ import java.io.File
 import java.nio.file.NoSuchFileException
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class CreativeApiController @Inject() (
   val controllerComponents: ControllerComponents,
   val creativeUtil: CreativeUtil,
+  val creativeDao: CreativeDao,
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -46,51 +51,31 @@ class CreativeApiController @Inject() (
       } else {
         val body = request.body.asJson
         try {
-          val result = body.map(json => {
+          val result = body.map(jsonValue => {
             val publisherName =
-              json.\("publisher").asOpt[JsString].fold("")(_.value)
-            val zoneName    = json.\("zone").asOpt[JsString].fold("")(_.value)
+              jsonValue.\("publisher").asOpt[JsString].fold("")(_.value)
+            val zoneName    = jsonValue.\("zone").asOpt[JsString].fold("")(_.value)
             val includeHtml =
-              json.\("includeHtml").asOpt[JsBoolean].fold(false)(_.value)
+              jsonValue.\("includeHtml").asOpt[JsBoolean].fold(false)(_.value)
 
             val eventualResultOpt = for {
               (creative, html) <- creativeUtil
                 .getCreative(publisherName, zoneName, includeHtml)
             } yield {
-              creative.map(c => {
-                Ok(
-                  Json.obj(
-                    "serve"                -> routes.CreativeApiController
-                      .serve(c.hash, "index.html")
-                      .absoluteURL(),
-                    "downloadedImpression" -> routes.CreativeApiController
-                      .downloadedImpression(c.hash)
-                      .absoluteURL(),
-                    "viewableImpression"   -> routes.CreativeApiController
-                      .viewableImpression(c.hash)
-                      .absoluteURL(),
-                    "zone"                 -> zoneName,
-                    "width"                -> c.width,
-                    "height"               -> c.height,
-                    "html" -> creativeUtil.insertBasePathFromUrl(
-                      html,
-                      routes.CreativeApiController
-                        .serve(c.hash, "index.html")
-                        .absoluteURL(),
-                    ),
-                  )
-                )
-                  .withHeaders(
-                    "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
-                    "Pragma"  -> "no-cache",
-                    "Expires" -> "0",
-                  )
-              })
+              val resultOpt = createRequestOkStatus(creative, html, zoneName)
+              // Inc metric if resultOpt and creative has Some() value.
+              for {
+                _ <- resultOpt
+                c <- creative
+              } {
+                creativeDao.incMetric(c.id, Metric.SERVED)
+              }
+              resultOpt
             }
 
             eventualResultOpt
-              .map(v =>
-                v.getOrElse(BadRequest("Ooops... Request unrecognized :-("))
+              .map(
+                _.getOrElse(BadRequest("Ooops... Request unrecognized :-("))
               )
               .recover(e => InternalServerError(e.toString))
           })
@@ -107,6 +92,42 @@ class CreativeApiController @Inject() (
             Future.successful(InternalServerError(e.toString))
         }
       }
+  }
+
+  private def createRequestOkStatus(
+    creative: Option[Creative],
+    html: Option[String],
+    zoneName: String,
+  )(implicit myRequest: Request[AnyContent]): Option[Result] = {
+    creative.map(c => {
+      Ok(
+        Json.obj(
+          "serve"                -> routes.CreativeApiController
+            .serve(c.hash, "index.html")
+            .absoluteURL(),
+          "downloadedImpression" -> routes.CreativeApiController
+            .downloadedImpression(c.hash)
+            .absoluteURL(),
+          "viewableImpression"   -> routes.CreativeApiController
+            .viewableImpression(c.hash)
+            .absoluteURL(),
+          "zone"                 -> zoneName,
+          "width"                -> c.width,
+          "height"               -> c.height,
+          "html"                 -> creativeUtil.insertBasePathFromUrl(
+            html,
+            routes.CreativeApiController
+              .serve(c.hash, "index.html")
+              .absoluteURL(),
+          ),
+        )
+      )
+        .withHeaders(
+          "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
+          "Pragma"        -> "no-cache",
+          "Expires"       -> "0",
+        )
+    })
   }
 
   def serve(hash: String, file: String): Action[AnyContent] = Action.async {

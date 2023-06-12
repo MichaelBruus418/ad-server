@@ -9,7 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration.Duration
 import scala.util.Random
-import scala.util.matching.Regex
 
 @Singleton
 class CreativeUtil @Inject() (

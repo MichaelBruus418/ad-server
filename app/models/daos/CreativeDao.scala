@@ -1,5 +1,6 @@
 package models.daos
 
+import enums.Metric.Metric
 import models.Creative
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.MySQLProfile.api._
@@ -7,6 +8,7 @@ import slick.jdbc.{GetResult, JdbcProfile}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure,Success}
 
 class CreativeDao @Inject() (
   protected val dbConfigProvider: DatabaseConfigProvider
@@ -42,8 +44,8 @@ class CreativeDao @Inject() (
   }
 
   /*
-  * Returns values necessary for serving creative.
-  *  */
+   * Returns values necessary for serving creative.
+   *  */
   def getLinkValuesByHash(
     hash: String
   ): Future[Option[Map[String, Any]]] = {
@@ -64,15 +66,23 @@ class CreativeDao @Inject() (
       vector <- db.run(query)
     } yield {
       vector.headOption.map(t =>
-        Map("id" -> t._1, "filepath" -> t._2, "advertiser_name" -> t._3, "publisher_name" -> t._4)
+        Map(
+          "id"              -> t._1,
+          "filepath"        -> t._2,
+          "advertiser_name" -> t._3,
+          "publisher_name"  -> t._4,
+        )
       )
     }
   }
 
   /*
-  * Returns in-flight Creatives relevant for publisher and zone.
-  *  */
-  def getPoolByPublisherNameAndZoneName(publisherName: String, zoneName: String): Future[Vector[Creative]] = {
+   * Returns in-flight Creatives relevant for publisher and zone.
+   *  */
+  def getPoolByPublisherNameAndZoneName(
+    publisherName: String,
+    zoneName: String,
+  ): Future[Vector[Creative]] = {
     val query = {
       sql"""
       select cr.* from creative cr
@@ -101,6 +111,29 @@ class CreativeDao @Inject() (
     }
 
     db.run(query)
+  }
+
+  /*
+  * Increments counter for metric by 1.
+  * @returns  Future with num of rows affected.
+  *  */
+  def incMetric(id: Int, metric: Metric): Unit = {
+    val query = {
+      sqlu"""
+        update Creative
+        set #${metric.toString.toLowerCase()} = #${metric.toString.toLowerCase()}+1
+        where id = ${id};
+      """
+    }
+
+    println("Query:")
+    println(query.toString)
+
+    val result = db.run(query)
+    result.onComplete {
+      case Success(v) => println("Updated num of rows: " + result)
+    }
+
   }
 
 }
