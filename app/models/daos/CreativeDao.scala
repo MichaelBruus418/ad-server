@@ -115,23 +115,28 @@ class CreativeDao @Inject() (
 
   /*
   * Increments counter for metric by 1.
-  * @returns  Future with num of rows affected.
   *  */
   def incMetric(id: Int, metric: Metric): Unit = {
     val query = {
       sqlu"""
         update Creative
-        set #${metric.toString.toLowerCase()} = #${metric.toString.toLowerCase()}+1
+        set #${metric.toString.toLowerCase()} = #${metric.toString.toLowerCase()} + 1
         where id = ${id};
       """
     }
 
-    println("Query:")
-    println(query.toString)
+    println("Metric inc for id: " + id)
 
+    // Returns future with num of rows affected.
     val result = db.run(query)
     result.onComplete {
-      case Success(v) => println("Updated num of rows: " + result)
+      case Success(v) => if (v != 1) {
+        println(s"Passed id ($id] doesn't exist.")
+        // TODO: Log error
+      }
+      case Failure(e) =>
+        // TODO: Log error
+        println(e.toString)
     }
 
   }

@@ -6,6 +6,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 
 import java.time.Instant
+import scala.Console.println
 
 @Singleton
 class HomeController @Inject() (
@@ -14,7 +15,7 @@ class HomeController @Inject() (
 
   def index(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-
+    println("Ad-Server: HomeController.index() called.")
     Ok(views.html.home.index("yadi yadi yadi"))
   }
 

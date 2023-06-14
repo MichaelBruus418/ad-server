@@ -54,23 +54,16 @@ class CreativeApiController @Inject() (
           val result = body.map(jsonValue => {
             val publisherName =
               jsonValue.\("publisher").asOpt[JsString].fold("")(_.value)
-            val zoneName    = jsonValue.\("zone").asOpt[JsString].fold("")(_.value)
-            val includeHtml =
+            val zoneName      =
+              jsonValue.\("zone").asOpt[JsString].fold("")(_.value)
+            val includeHtml   =
               jsonValue.\("includeHtml").asOpt[JsBoolean].fold(false)(_.value)
 
             val eventualResultOpt = for {
               (creative, html) <- creativeUtil
                 .getCreative(publisherName, zoneName, includeHtml)
             } yield {
-              val resultOpt = createRequestOkStatus(creative, html, zoneName)
-              // Inc metric if resultOpt and creative has Some() value.
-              for {
-                _ <- resultOpt
-                c <- creative
-              } {
-                creativeDao.incMetric(c.id, Metric.SERVED)
-              }
-              resultOpt
+              createRequestOkStatus(creative, html, zoneName)
             }
 
             eventualResultOpt
@@ -111,6 +104,7 @@ class CreativeApiController @Inject() (
           "viewableImpression"   -> routes.CreativeApiController
             .viewableImpression(c.hash)
             .absoluteURL(),
+          "hash"                 -> c.hash,
           "zone"                 -> zoneName,
           "width"                -> c.width,
           "height"               -> c.height,
@@ -145,19 +139,26 @@ class CreativeApiController @Inject() (
             try {
               if (file.toLowerCase().endsWith("index.html")) {
                 // Serve html file
-                // TODO: Inc counter for served impression (use id in tuple)
                 // Thread.sleep(3000)
-                Ok.sendFile(new File(basePath + dir + "/" + filepath))
+                val result = Ok
+                  .sendFile(new File(basePath + dir + "/" + filepath))
                   .withHeaders(
                     "Cache-Control" -> "no-cache, no-store, must-revalidate, max-age=0",
                     "Pragma"  -> "no-cache",
                     "Expires" -> "0",
                   )
+
+                // Inc counter for served metric.
+                // We do this after creating result, so we only inc if file exists.
+                creativeDao.incMetric(id, Metric.SERVED)
+
+                result
               } else {
                 // Serve assets (css, js, images etc.)
                 Ok.sendFile(new File(basePath + dir + "/" + file))
               }
             } catch {
+              // Note: No message should be returned as website will display it.
               case e: NoSuchFileException => Status(404)("404: Not found.")
               case e: Throwable => Status(500)("500: Unknown Server Error.")
             }
@@ -176,7 +177,17 @@ class CreativeApiController @Inject() (
 
   def downloadedImpression(hash: String): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      Ok("TODO")
+
+       /*  val result = authenticate(request.headers)
+        if (result.header.status != 200) {
+          result
+        } else {
+          println("bla bla bla")
+          Ok("bla bla bla")
+        } */
+
+        println(request.toString())
+      Ok("bla bla bla")
   }
 
   def viewableImpression(hash: String): Action[AnyContent] = Action {
