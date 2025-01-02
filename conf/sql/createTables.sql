@@ -1,3 +1,4 @@
+
 # DB Collation: utf8mb4_unicode_ci
 
 ########################################################################################################################
@@ -146,37 +147,37 @@ VALUES ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         'Cane Line Campaign',
         true,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00'),
+        '2034-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Københavns Listefabrik'),
         'Københavns Listefabrik Campaign',
         false,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00'),
+        '2034-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Læger uden grænser'),
         'Læger uden grænser Campaign',
         false,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00'),
+        '2034-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Mercury Motor'),
         'Mercury Motor Campaign',
         false,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00'),
+        '2034-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'SJEC Danmark'),
         'SJEC Danmark Campaign',
         false,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00'),
+        '2034-06-01 00:00:00'),
        ((SELECT id FROM publisher where name = 'Jyllands-Posten'),
         (SELECT id FROM advertiser where name = 'Tryg Forsikring'),
         'Tryg Forsikring Campaign',
         false,
         '2023-05-01 00:00:00',
-        '2024-06-01 00:00:00')
+        '2034-06-01 00:00:00')
 ;
 
 # Filepath is relative to advertiser folder (no start slash)
